@@ -49,6 +49,25 @@ html {
   cursor: none !important;
 }
 
+html.is-mobile {
+  cursor: auto !important;
+}
+
+html.is-mobile body,
+html.is-mobile a,
+html.is-mobile button,
+html.is-mobile input,
+html.is-mobile textarea,
+html.is-mobile select {
+  cursor: auto !important;
+}
+
+html.is-mobile .cursor-outer,
+html.is-mobile .cursor-inner,
+html.is-mobile .cursor-label {
+  display: none !important;
+}
+
 html.lenis, html.lenis body {
   height: auto;
 }
@@ -1797,14 +1816,6 @@ img { display: block; max-width: 100%; }
   color: var(--accent);
 }
 
-@media (max-width: 1024px) {
-  .artist-overlay-hero { grid-template-columns: 1fr; }
-  .artist-overlay-portrait { min-height: 60vh; }
-  .artist-overlay-intro { padding: 60px 40px 80px; }
-  .artist-overlay-body { grid-template-columns: 1fr; gap: 60px; padding: 60px 8vw; }
-  .artist-overlay-topbar { padding: 16px 20px; }
-}
-
 /* ═══════════════════════════════════
    FOOTER
    ═══════════════════════════════════ */
@@ -1917,6 +1928,96 @@ img { display: block; max-width: 100%; }
 }
 
 /* ═══════════════════════════════════
+   MOBILE NAVIGATION
+   ═══════════════════════════════════ */
+
+.mobile-nav-toggle {
+  display: none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  width: 44px;
+  height: 44px;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-med);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  mix-blend-mode: difference;
+}
+
+.mobile-nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: var(--bone);
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.mobile-nav-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(4px, 4px);
+}
+.mobile-nav-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+.mobile-nav-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(4px, -4px);
+}
+
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(10,10,10,0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-out-expo);
+}
+
+.mobile-nav-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mobile-nav-overlay a {
+  font-family: var(--serif);
+  font-size: clamp(28px, 8vw, 44px);
+  font-style: italic;
+  color: var(--bone);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.3s, color 0.3s;
+}
+
+.mobile-nav-overlay a:hover,
+.mobile-nav-overlay a:active {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.mobile-nav-brand {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 900;
+  color: rgba(240,236,226,0.2);
+  letter-spacing: 0.05em;
+  position: absolute;
+  bottom: 30px;
+}
+
+/* ═══════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════ */
 
@@ -1933,22 +2034,385 @@ img { display: block; max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  .gallery-piece { width: 75vw; min-width: 280px; }
-  .nav-corner { font-size: 8px; letter-spacing: 2px; }
-  .nav-tl { top: 20px; left: 20px; }
-  .nav-tr { top: 20px; right: 20px; }
-  .nav-bl { bottom: 20px; left: 20px; }
-  .nav-br { bottom: 20px; right: 20px; }
-  .nav-center { top: 18px; }
+
+  /* ── Show mobile nav, hide corner nav ── */
+  .mobile-nav-toggle {
+    display: flex;
+  }
+
+  .mobile-nav-overlay {
+    display: flex;
+  }
+
+  .nav-corner {
+    display: none !important;
+  }
+
+  .nav-center {
+    left: 20px;
+    transform: none;
+    top: 22px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100svh;
+    padding: 20px 20px 60px;
+  }
+
+  .hero-title {
+    font-size: clamp(80px, 25vw, 200px);
+  }
+
+  .hero-subtitle {
+    font-size: 7px;
+    letter-spacing: 4px;
+    margin-top: 30px;
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  .hero-year {
+    font-size: 11px;
+    margin-top: 14px;
+  }
+
+  .hero-scroll-indicator {
+    margin-top: 30px;
+  }
+
+  /* ── Marquee ── */
+  .marquee-item {
+    font-size: clamp(20px, 5vw, 36px);
+    padding: 0 16px;
+  }
+
+  .marquee-track {
+    padding: 18px 0;
+  }
+
+  /* ── Manifesto ── */
+  .manifesto {
+    padding: 80px 30px;
+    min-height: auto;
+  }
+
+  .manifesto-content {
+    max-width: 100%;
+  }
+
+  .manifesto-text {
+    font-size: clamp(18px, 5vw, 28px);
+  }
+
+  .manifesto-label {
+    margin-bottom: 30px;
+    font-size: 8px;
+    letter-spacing: 4px;
+  }
+
   .manifesto-number { display: none; }
+
+  /* ── Horizontal Gallery → Vertical on mobile ── */
+  .horizontal-section {
+    overflow: visible !important;
+  }
+
+  .horizontal-track {
+    display: flex;
+    flex-direction: column;
+    width: 100% !important;
+    padding: 40px 20px 60px;
+    gap: 50px;
+    transform: none !important;
+  }
+
+  .gallery-label {
+    padding: 0 20px;
+    margin-top: 50px;
+    margin-bottom: -20px;
+    font-size: 8px;
+    letter-spacing: 4px;
+  }
+
+  .gallery-piece {
+    width: 100% !important;
+    min-width: unset !important;
+    flex-shrink: 1;
+  }
+
+  .gallery-piece:nth-child(even) {
+    margin-top: 0;
+  }
+
+  .artwork-frame {
+    aspect-ratio: 3/4;
+  }
+
+  .artwork-info {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .artwork-info > div:last-child {
+    text-align: left !important;
+  }
+
+  .artwork-title {
+    font-size: 18px;
+  }
+
+  .artwork-artist {
+    font-size: 8px;
+  }
+
+  .artwork-overlay {
+    opacity: 0;
+  }
+
+  /* ── Card flip back adjustments ── */
+  .artwork-back {
+    padding: 20px;
+  }
+
+  .artwork-back-title {
+    font-size: 18px;
+  }
+
+  .artwork-back-desc {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .artwork-back-details {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  /* ── Split / Exhibition ── */
+  .split-right {
+    padding: 60px 24px;
+  }
+
+  .exhibition-tag {
+    font-size: 8px;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+  }
+
+  .exhibition-title {
+    font-size: clamp(28px, 8vw, 48px);
+    margin-bottom: 24px;
+  }
+
+  .exhibition-body {
+    font-size: 10px;
+    line-height: 1.9;
+  }
+
+  .exhibition-dates {
+    font-size: 9px;
+    margin-bottom: 30px;
+  }
+
+  /* ── Artists Section ── */
+  .artists-section {
+    padding: 80px 20px;
+  }
+
+  .artists-heading {
+    font-size: clamp(40px, 12vw, 80px);
+    margin-bottom: 40px;
+  }
+
+  .artist-row {
+    padding: 20px 0;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .artist-row:hover {
+    padding-left: 12px;
+  }
+
+  .artist-index {
+    font-size: 9px;
+    min-width: 24px;
+  }
+
+  .artist-name {
+    font-size: clamp(18px, 5vw, 26px);
+    margin: 0 8px;
+    flex-basis: calc(100% - 80px);
+  }
+
+  .artist-discipline {
+    font-size: 7px;
+    letter-spacing: 2px;
+    margin-left: 32px;
+    flex-basis: 100%;
+    margin-top: 2px;
+  }
+
+  .artist-arrow {
+    opacity: 0.4;
+    transform: none;
+    position: absolute;
+    right: 0;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 60px 20px 40px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    margin-bottom: 50px;
+  }
+
+  .footer-brand {
+    font-size: 36px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    font-size: 7px;
+  }
+
+  /* ── General spacing ── */
+  .about-content {
+    padding: 60px 20px;
+  }
+
+  .contact-content {
+    padding: 60px 20px;
+  }
+
+  .separator {
+    margin: 0 20px;
+  }
+
+  /* ── Works grid ── */
   .works-grid { grid-template-columns: 1fr 1fr; }
   .about-stat-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; gap: 40px; }
   .artist-works-grid { grid-template-columns: 1fr; }
+
+  /* ── Exhibition hero ── */
+  .exhibition-hero {
+    height: 60vh;
+    min-height: 350px;
+  }
+
+  .exhibition-hero-content {
+    padding: 0 24px;
+  }
+
+  .exhibition-hero-title {
+    font-size: clamp(36px, 10vw, 80px);
+  }
+
+  /* ── Page hero ── */
+  .page-hero {
+    height: 50vh;
+    min-height: 300px;
+  }
+
+  .page-hero-title {
+    font-size: clamp(36px, 10vw, 80px);
+    padding: 0 20px;
+  }
+
+  /* ── CTA buttons ── */
+  .cta-line {
+    font-size: 8px;
+    letter-spacing: 3px;
+  }
+
+  .cta-box {
+    font-size: 8px;
+    letter-spacing: 3px;
+    padding: 16px 28px;
+  }
+
+  /* ── Preloader ── */
+  .preloader-brand {
+    top: 20px;
+    left: 20px;
+    font-size: 14px;
+  }
+
+  .preloader-counter {
+    font-size: clamp(60px, 18vw, 160px);
+  }
 }
 
+/* ── Extra small screens ── */
 @media (max-width: 480px) {
   .works-grid { grid-template-columns: 1fr; }
+
+  .hero-title {
+    font-size: clamp(64px, 28vw, 160px);
+  }
+
+  .artist-name {
+    font-size: 18px;
+  }
+
+  .artwork-back-details {
+    gap: 10px;
+  }
+
+  .marquee-item {
+    font-size: 18px;
+    padding: 0 12px;
+  }
+}
+
+/* ═══════════════════════════════════
+   ARTIST OVERLAY — MOBILE RESPONSIVE
+   ═══════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .artist-overlay-hero { grid-template-columns: 1fr; }
+  .artist-overlay-portrait { min-height: 50vh; }
+  .artist-overlay-intro { padding: 60px 40px 80px; }
+  .artist-overlay-body { grid-template-columns: 1fr; gap: 60px; padding: 60px 8vw; }
+  .artist-overlay-topbar { padding: 16px 20px; }
+}
+
+@media (max-width: 768px) {
+  .artist-overlay-portrait { min-height: 40vh; }
+  .artist-overlay-intro { padding: 40px 24px 60px; }
+  .artist-overlay-body { padding: 40px 24px; gap: 40px; }
+  .artist-overlay-name { font-size: clamp(32px, 9vw, 60px); }
+  .artist-overlay-quote { font-size: 14px; max-width: 100%; }
+  .artist-overlay-topbar { padding: 12px 16px; }
+  .artist-overlay-btn { padding: 10px 16px; font-size: 8px; letter-spacing: 2px; }
+  .artist-overlay-works-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .artist-overlay-exhibition-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .artist-overlay-exhibition-venue {
+    text-align: left;
+  }
+  .artist-overlay-footer {
+    padding: 30px 24px;
+    flex-direction: row;
+  }
+  .artist-overlay-footer-btn {
+    font-size: 8px;
+    letter-spacing: 2px;
+  }
+  .artist-portrait-initials span {
+    font-size: clamp(80px, 22vw, 160px);
+  }
 }
 
 </style>
@@ -1977,6 +2441,19 @@ img { display: block; max-width: 100%; }
 <div class="nav-center"><a href="#">AH<span class="accent">'C</span></a></div>
 <div class="nav-corner nav-bl"><a href="#artists">Artists</a></div>
 <div class="nav-corner nav-br"><a href="#contact">Inquire</a></div>
+
+<!-- ═══ MOBILE NAV ═══ -->
+<button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Menu">
+  <span></span><span></span><span></span>
+</button>
+<div class="mobile-nav-overlay" id="mobileNavOverlay">
+  <a href="#works" class="mobile-nav-link">Works</a>
+  <a href="#about" class="mobile-nav-link">About</a>
+  <a href="#artists" class="mobile-nav-link">Artists</a>
+  <a href="#exhibition" class="mobile-nav-link">Exhibition</a>
+  <a href="#contact" class="mobile-nav-link">Inquire</a>
+  <div class="mobile-nav-brand">AH'C — Est. MMXIV</div>
+</div>
 
 <!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero">
@@ -2279,6 +2756,46 @@ img { display: block; max-width: 100%; }
    ═══════════════════════════════════════════════════════ */
 
 // ────────────────────────────────
+//  MOBILE DETECTION
+// ────────────────────────────────
+
+const isMobile = (function() {
+  const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const narrow = window.innerWidth <= 768;
+  return touch || narrow;
+})();
+
+if (isMobile) {
+  document.documentElement.classList.add('is-mobile');
+}
+
+// ────────────────────────────────
+//  MOBILE NAVIGATION
+// ────────────────────────────────
+
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('mobileNavToggle');
+    const overlay = document.getElementById('mobileNavOverlay');
+    if (!toggle || !overlay) return;
+
+    toggle.addEventListener('click', function() {
+      toggle.classList.toggle('active');
+      overlay.classList.toggle('active');
+      document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : '';
+    });
+
+    overlay.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        toggle.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+  });
+})();
+
+// ────────────────────────────────
 //  CUSTOM CURSOR
 // ────────────────────────────────
 
@@ -2292,6 +2809,7 @@ const Cursor = {
   outerY: -100,
 
   init() {
+    if (isMobile) return; // No custom cursor on touch devices
     this.outer = document.getElementById('cursorOuter');
     this.inner = document.getElementById('cursorInner');
     this.label = document.getElementById('cursorLabel');
@@ -2482,6 +3000,7 @@ let lenisInstance = null;
 
 function initLenis() {
   if (typeof Lenis === 'undefined') return null;
+  if (isMobile) return null; // Native scroll is better on touch devices
   
   lenisInstance = new Lenis({
     duration: 1.6,
@@ -2790,6 +3309,9 @@ const Animations = {
   },
 
   initHorizontalScroll() {
+    // On mobile, gallery is vertical — no GSAP horizontal scroll needed
+    if (isMobile) return;
+
     const track = document.getElementById('horizontalTrack');
     const section = document.querySelector('.horizontal-section');
     if (!track || !section) return;
@@ -2990,9 +3512,9 @@ function open(id) {
     var exHTML = '';
     for (var i = 0; i < artist.exhibitions.length; i++) {
       var ex = artist.exhibitions[i];
-      exHTML += '<div style="padding:12px 0;border-bottom:1px solid rgba(240,236,226,0.08);display:flex;justify-content:space-between;align-items:baseline;gap:20px;">' +
-        '<span style="font-family:\'Playfair Display\',serif;font-size:14px;font-style:italic;color:#f0ece2">' + ex.name + '</span>' +
-        '<span style="font-family:\'Space Mono\',monospace;font-size:8px;letter-spacing:1px;color:#444440;text-transform:uppercase;">' + ex.venue + '</span>' +
+      exHTML += '<div style="padding:12px 0;border-bottom:1px solid rgba(240,236,226,0.08);display:flex;' + (isMobile ? 'flex-direction:column;gap:4px' : 'justify-content:space-between;align-items:baseline;gap:20px') + ';">' +
+        '<span style="font-family:\'Playfair Display\',serif;font-size:' + (isMobile ? '13px' : '14px') + ';font-style:italic;color:#f0ece2">' + ex.name + '</span>' +
+        '<span style="font-family:\'Space Mono\',monospace;font-size:' + (isMobile ? '7px' : '8px') + ';letter-spacing:1px;color:#444440;text-transform:uppercase;">' + ex.venue + '</span>' +
       '</div>';
     }
 
@@ -3013,34 +3535,47 @@ function open(id) {
     // THE FIX: Hidden overflow and Flex column
     el.style.cssText = 'position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:1000000!important;background:#0a0a0a!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;color:#f0ece2!important';
 
+    var mob = isMobile;
+    var padTop = mob ? '12px 16px' : '20px 40px';
+    var padMain = mob ? '30px 24px 60px' : '60px 80px';
+    var padPortrait = mob ? '60px 24px 30px' : '60px';
+    var gridCols = mob ? '1fr' : '1fr 1.2fr';
+    var bioGridCols = mob ? '1fr' : '1fr 1fr';
+    var fontSize9 = mob ? '8px' : '9px';
+    var letterSp = mob ? '2px' : '3px';
+    var btnPad = mob ? '8px 14px' : '10px 20px';
+    var bioFontSize = mob ? '15px' : '18px';
+    var gapSize = mob ? '36px' : '60px';
+    var initialsSize = mob ? '25vw' : '15vw';
+
     el.innerHTML =
       // TOP BAR (Fixed)
-      '<div style="padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">' +
-        '<button onclick="ArtistOverlay.close()" style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#f0ece2;background:none;border:1px solid rgba(240,236,226,0.15);padding:10px 20px;cursor:pointer">\u2190 Back</button>' +
+      '<div style="padding:' + padTop + ';display:flex;justify-content:space-between;align-items:center;flex-shrink:0">' +
+        '<button onclick="ArtistOverlay.close()" style="font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:' + letterSp + ';text-transform:uppercase;color:#f0ece2;background:none;border:1px solid rgba(240,236,226,0.15);padding:' + btnPad + ';cursor:pointer">\u2190 Back</button>' +
         '<div style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:6px;color:#444440">' + num + ' / 07</div>' +
       '</div>' +
 
-      // MAIN BODY (The Split)
-      '<div style="display:grid;grid-template-columns:1fr 1.2fr;flex-grow:1;min-height:0">' +
+      // MAIN BODY (The Split — stacks on mobile)
+      '<div style="display:grid;grid-template-columns:' + gridCols + ';flex-grow:1;min-height:0;overflow-y:auto">' +
         
         // Left: Portrait & Meta
-        '<div style="position:relative;background:' + pal.portrait + ';display:flex;flex-direction:column;justify-content:flex-end;padding:60px;border-right:1px solid rgba(240,236,226,0.05)">' +
-          '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:\'Playfair Display\',serif;font-size:15vw;font-weight:900;font-style:italic;color:rgba(240,236,226,0.04);user-select:none">' + initials + '</div>' +
+        '<div style="position:relative;background:' + pal.portrait + ';display:flex;flex-direction:column;justify-content:flex-end;padding:' + padPortrait + ';' + (mob ? 'min-height:40vh' : 'border-right:1px solid rgba(240,236,226,0.05)') + '">' +
+          '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:\'Playfair Display\',serif;font-size:' + initialsSize + ';font-weight:900;font-style:italic;color:rgba(240,236,226,0.04);user-select:none">' + initials + '</div>' +
           '<div style="position:relative;z-index:2">' +
             '<div style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c5a880;margin-bottom:10px">' + artist.discipline + '</div>' +
-            '<h1 style="font-family:\'Playfair Display\',serif;font-size:clamp(40px, 5vw, 75px);font-weight:900;font-style:italic;color:#f0ece2;line-height:1;margin:0 0 10px 0">' + artist.name + '</h1>' +
+            '<h1 style="font-family:\'Playfair Display\',serif;font-size:clamp(32px, 8vw, 75px);font-weight:900;font-style:italic;color:#f0ece2;line-height:1;margin:0 0 10px 0">' + artist.name + '</h1>' +
             '<div style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:3px;color:#444440;text-transform:uppercase">' + artist.location + '</div>' +
           '</div>' +
         '</div>' +
 
-        // Right: Bio & Lists (This side is internally scrollable if needed)
-        '<div style="padding:60px 80px;overflow-y:auto;display:flex;flex-direction:column;gap:60px">' +
+        // Right: Bio & Lists
+        '<div style="padding:' + padMain + ';display:flex;flex-direction:column;gap:' + gapSize + '">' +
           '<div>' +
             '<div style="font-family:\'Space Mono\',monospace;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#c5a880;margin-bottom:20px">The Profile</div>' +
-            '<div style="font-family:\'Playfair Display\',serif;font-size:18px;font-style:italic;line-height:1.8;color:rgba(240,236,226,0.7)">' + artist.bio + '</div>' +
+            '<div style="font-family:\'Playfair Display\',serif;font-size:' + bioFontSize + ';font-style:italic;line-height:1.8;color:rgba(240,236,226,0.7)">' + artist.bio + '</div>' +
           '</div>' +
           
-          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">' +
+          '<div style="display:grid;grid-template-columns:' + bioGridCols + ';gap:' + (mob ? '30px' : '40px') + '">' +
             '<div>' +
               '<div style="font-family:\'Space Mono\',monospace;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#444440;margin-bottom:20px">Exhibitions</div>' +
               exHTML +
@@ -3054,9 +3589,9 @@ function open(id) {
       '</div>' +
 
       // FOOTER NAV (Fixed)
-      '<div style="padding:20px 40px;border-top:1px solid rgba(240,236,226,0.08);display:flex;justify-content:space-between;flex-shrink:0">' +
-        '<button onclick="ArtistOverlay.open(' + prevId + ')" style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer">\u2190 Previous</button>' +
-        '<button onclick="ArtistOverlay.open(' + nextId + ')" style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer">Next Artist \u2192</button>' +
+      '<div style="padding:' + (mob ? '14px 16px' : '20px 40px') + ';border-top:1px solid rgba(240,236,226,0.08);display:flex;justify-content:space-between;flex-shrink:0">' +
+        '<button onclick="ArtistOverlay.open(' + prevId + ')" style="font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer">\u2190 Previous</button>' +
+        '<button onclick="ArtistOverlay.open(' + nextId + ')" style="font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer">Next Artist \u2192</button>' +
       '</div>';
 
     document.body.appendChild(el);
