@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AH'C — The Absence of Presence</title>
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Lenis is optional — site works without it
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js';
+    s.onerror = function(){ console.warn('Lenis failed to load — smooth scroll disabled'); };
+    document.head.appendChild(s);
+  </script>
+<style>
+/* ═══════════════════════════════════════════════════
+   AH'C GALLERY — "Digital Brutalism" Design System
+   ═══════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700;1,6..96,900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* ── RESET & VARIABLES ── */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bone: #f0ece2;
+  --ink: #0a0a0a;
+  --grey: #888880;
+  --grey-dark: #444440;
+  --accent: #c5a880;
+  --accent-dim: rgba(197, 168, 128, 0.15);
+  --serif: 'Bodoni Moda', 'Didot', 'Georgia', serif;
+  --mono: 'Space Mono', 'Courier New', monospace;
+  --border: rgba(240, 236, 226, 0.08);
+  --border-med: rgba(240, 236, 226, 0.15);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+html {
+  cursor: none !important;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+body {
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--mono);
+  overflow-x: hidden;
+  cursor: none !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a, button, input, textarea, select { cursor: none !important; }
+
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+img { display: block; max-width: 100%; }
+
+/* ═══════════════════════════════════
+   PAGE TRANSITION OVERLAY
+   ═══════════════════════════════════ */
+
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  pointer-events: none;
+  display: flex;
+}
+
+.page-transition .col {
+  flex: 1;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+
+.page-transition.entering .col {
+  transform-origin: top;
+  animation: colEnter 0.6s var(--ease-in-out) forwards;
+}
+
+.page-transition.leaving .col {
+  transform-origin: bottom;
+  animation: colLeave 0.6s var(--ease-in-out) forwards;
+}
+
+.page-transition .col:nth-child(1) { animation-delay: 0s; }
+.page-transition .col:nth-child(2) { animation-delay: 0.05s; }
+.page-transition .col:nth-child(3) { animation-delay: 0.1s; }
+.page-transition .col:nth-child(4) { animation-delay: 0.15s; }
+.page-transition .col:nth-child(5) { animation-delay: 0.2s; }
+
+@keyframes colEnter {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes colLeave {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(0); }
+}
+
+/* ═══════════════════════════════════
+   CUSTOM CURSOR
+   ═══════════════════════════════════ */
+
+.cursor-outer {
+  position: fixed;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(240, 236, 226, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100000;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s var(--ease-out-expo),
+              height 0.5s var(--ease-out-expo),
+              border-color 0.4s,
+              background 0.4s,
+              opacity 0.3s;
+  mix-blend-mode: difference;
+}
+
+.cursor-inner {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  background: var(--bone);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100001;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
+}
+
+.cursor-label {
+  position: fixed;
+  pointer-events: none;
+  z-index: 100002;
+  transform: translate(-50%, -50%);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bone);
+  opacity: 0;
+  transition: opacity 0.3s;
+  mix-blend-mode: difference;
+  white-space: nowrap;
+}
+
+.cursor-outer.hovering {
+  width: 100px;
+  height: 100px;
+  background: rgba(240, 236, 226, 0.04);
+  border-color: var(--accent);
+}
+
+.cursor-outer.hovering-sm {
+  width: 64px;
+  height: 64px;
+  border-color: rgba(240, 236, 226, 0.6);
+}
+
+.cursor-label.visible { opacity: 1; }
+
+.cursor-inner.hidden { opacity: 0; width: 0; height: 0; }
+
+/* ═══════════════════════════════════
+   PRELOADER
+   ═══════════════════════════════════ */
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+.preloader-counter {
+  font-family: var(--serif);
+  font-size: clamp(80px, 15vw, 220px);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--bone);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.preloader-text {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.preloader-line {
+  width: 160px;
+  height: 1px;
+  background: rgba(240, 236, 226, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.preloader-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.08s linear;
+}
+
+.preloader-brand {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(240, 236, 226, 0.15);
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════
+   NAVIGATION — ANTI-NAV
+   ═══════════════════════════════════ */
+
+.nav-corner {
+  position: fixed;
+  z-index: 10000;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--grey);
+  mix-blend-mode: difference;
+  transition: color 0.3s;
+}
+
+.nav-corner a {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s;
+  padding: 4px 0;
+}
+
+.nav-corner a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease-out-expo);
+}
+
+.nav-corner a:hover { color: var(--accent); }
+.nav-corner a:hover::after { width: 100%; }
+.nav-corner a.active { color: var(--bone); }
+.nav-corner a.active::after { width: 100%; background: var(--bone); }
+
+.nav-tl { top: 30px; left: 40px; }
+.nav-tr { top: 30px; right: 40px; text-align: right; }
+.nav-bl { bottom: 30px; left: 40px; }
+.nav-br { bottom: 30px; right: 40px; text-align: right; }
+
+/* Center logo */
+.nav-center {
+  position: fixed;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  mix-blend-mode: difference;
+}
+
+.nav-center a {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--bone);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  transition: color 0.3s;
+}
+
+.nav-center a .accent { color: var(--accent); font-style: italic; }
+.nav-center a:hover { color: var(--accent); }
+
+/* ═══════════════════════════════════
+   HERO
+   ═══════════════════════════════════ */
+
+.hero {
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 40px;
+}
+
+.hero-bg-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(100px, 22vw, 340px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.82;
+  text-align: center;
+  color: var(--bone);
+  position: relative;
+}
+
+.hero-title .italic {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-subtitle {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-top: 50px;
+}
+
+.hero-year {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--grey-dark);
+  letter-spacing: 3px;
+  margin-top: 20px;
+}
+
+.hero-scroll-indicator {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-scroll-indicator span {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+}
+
+.scroll-line {
+  width: 1px;
+  height: 50px;
+  background: rgba(240, 236, 226, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-line::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  animation: scrollPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0% { top: -100%; opacity: 0; }
+  30% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* ═══════════════════════════════════
+   MARQUEE
+   ═══════════════════════════════════ */
+
+.marquee-section {
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.marquee-track {
+  display: flex;
+  white-space: nowrap;
+  animation: marqueeScroll 40s linear infinite;
+  padding: 28px 0;
+  will-change: transform;
+}
+
+.marquee-track.reverse { animation-direction: reverse; }
+.marquee-track.fast { animation-duration: 25s; }
+
+.marquee-item {
+  font-family: var(--serif);
+  font-size: clamp(28px, 4.5vw, 56px);
+  font-style: italic;
+  color: rgba(240, 236, 226, 0.08);
+  padding: 0 30px;
+  flex-shrink: 0;
+  transition: color 0.6s;
+}
+
+.marquee-section:hover .marquee-item {
+  color: rgba(240, 236, 226, 0.15);
+}
+
+.marquee-item .divider {
+  color: var(--accent);
+  opacity: 0.2;
+  margin: 0 15px;
+  font-style: normal;
+  font-size: 0.6em;
+  vertical-align: middle;
+}
+
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ═══════════════════════════════════
+   SECTION HEADERS (SHARED)
+   ═══════════════════════════════════ */
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--grey);
+  display: block;
+}
+
+.section-label.accent { color: var(--accent); }
+
+.section-number {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgba(240, 236, 226, 0.12);
+  margin-right: 16px;
+}
+
+/* ═══════════════════════════════════
+   MANIFESTO / ABOUT BLOCKS
+   ═══════════════════════════════════ */
+
+.manifesto {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 140px 60px;
+  position: relative;
+}
+
+.manifesto-content {
+  max-width: 520px;
+  text-align: center;
+}
+
+.manifesto-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 60px;
+  display: block;
+}
+
+.manifesto-text {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.8vw, 36px);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--bone);
+  font-style: italic;
+}
+
+.manifesto-text em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.manifesto-number {
+  font-family: var(--mono);
+  font-size: clamp(120px, 15vw, 240px);
+  font-weight: 700;
+  color: rgba(240, 236, 226, 0.025);
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 1;
+  user-select: none;
+}
+
+/* ═══════════════════════════════════
+   HORIZONTAL GALLERY
+   ═══════════════════════════════════ */
+
+.horizontal-section {
+  overflow: hidden;
+}
+
+.horizontal-track {
+  display: flex;
+  width: fit-content;
+  padding: 60px 0 120px;
+  gap: 3vw;
+  padding-left: 10vw;
+  padding-right: 10vw;
+}
+
+.gallery-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--grey);
+  padding: 0 10vw;
+  margin-bottom: -40px;
+  margin-top: 80px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.gallery-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.gallery-piece {
+  flex-shrink: 0;
+  width: 24vw;
+  min-width: 260px;
+  position: relative;
+}
+
+.gallery-piece:nth-child(even) { margin-top: 60px; }
+
+.artwork-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  background: rgba(240, 236, 226, 0.02);
+}
+
+.artwork-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.artwork-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(10,10,10,0.7));
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out-expo);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 30px;
+}
+
+.gallery-piece:hover .artwork-overlay { opacity: 1; }
+
+.artwork-overlay span {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+
+.artwork-overlay .artwork-number {
+  font-family: var(--serif);
+  font-size: 48px;
+  font-style: italic;
+  color: rgba(240, 236, 226, 0.1);
+}
+
+.artwork-info {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.artwork-title {
+  font-family: var(--serif);
+  font-size: clamp(16px, 1.8vw, 24px);
+  font-style: italic;
+  color: var(--bone);
+  line-height: 1.3;
+  transition: color 0.3s;
+}
+
+.gallery-piece:hover .artwork-title { color: var(--accent); }
+
+.artwork-artist {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-top: 8px;
+}
+
+.artwork-medium {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--grey-dark);
+  margin-top: 4px;
+}
+
+.artwork-year {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--grey);
+}
+
+.artwork-price {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════
+   SPLIT SECTION (EXHIBITION)
+   ═══════════════════════════════════ */
+
+.split-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  border-top: 1px solid var(--border);
+}
+
+.split-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+  border-right: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.split-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 80px 80px 100px;
+  position: relative;
+}
+
+.exhibition-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 30px;
+}
+
+.exhibition-title {
+  font-family: var(--serif);
+  font-size: clamp(34px, 4.5vw, 68px);
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--bone);
+  margin-bottom: 35px;
+}
+
+.exhibition-title .light {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--grey);
+  font-size: 0.55em;
+  display: block;
+  margin-top: 8px;
+}
+
+.exhibition-body {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 2.1;
+  color: var(--grey);
+  max-width: 400px;
+  margin-bottom: 40px;
+}
+
+.exhibition-dates {
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 2;
+  color: var(--bone);
+  opacity: 0.6;
+  margin-bottom: 40px;
+  padding-left: 16px;
+  border-left: 2px solid var(--accent);
+}
+
+.split-artwork {
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  position: relative;
+}
+
+.split-artwork canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ═══════════════════════════════════
+   CTA / BUTTONS
+   ═══════════════════════════════════ */
+
+.cta-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--bone);
+  text-decoration: none;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--grey-dark);
+  transition: border-color 0.4s, color 0.3s, padding-left 0.4s var(--ease-out-expo);
+}
+
+.cta-line:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  padding-left: 10px;
+}
+
+.cta-line svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.cta-line:hover svg { transform: translateX(8px); }
+
+.cta-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--bone);
+  text-decoration: none;
+  padding: 20px 40px;
+  border: 1px solid var(--border-med);
+  transition: all 0.4s var(--ease-out-expo);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s var(--ease-out-expo);
+  z-index: -1;
+}
+
+.cta-box:hover { color: var(--ink); border-color: var(--accent); }
+.cta-box:hover::before { transform: scaleX(1); }
+
+/* ═══════════════════════════════════
+   ARTISTS LIST
+   ═══════════════════════════════════ */
+
+.artists-section {
+  padding: 140px 10vw;
+  border-top: 1px solid var(--border);
+}
+
+.artists-heading {
+  font-family: var(--serif);
+  font-size: clamp(48px, 8vw, 130px);
+  font-weight: 900;
+  color: var(--bone);
+  margin-bottom: 70px;
+  line-height: 0.95;
+}
+
+.artists-heading .outline {
+  -webkit-text-stroke: 1px var(--bone);
+  color: transparent;
+}
+
+.artist-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+  transition: padding-left 0.6s var(--ease-out-expo),
+              background 0.4s;
+  text-decoration: none;
+}
+
+.artist-row:first-of-type { border-top: 1px solid var(--border); }
+
+.artist-row:hover {
+  padding-left: 40px;
+  background: rgba(240, 236, 226, 0.015);
+}
+
+.artist-row:hover .artist-name { color: var(--accent); }
+
+.artist-name {
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.8vw, 34px);
+  font-style: italic;
+  color: var(--bone);
+  transition: color 0.3s;
+  flex: 1;
+  margin: 0 20px;
+}
+
+.artist-discipline {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+}
+
+.artist-index {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgba(240, 236, 226, 0.12);
+  min-width: 30px;
+}
+
+.artist-arrow {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--grey-dark);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.3s, transform 0.4s var(--ease-out-expo);
+}
+
+.artist-row:hover .artist-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ═══════════════════════════════════
+   PAGE HERO (INNER PAGES)
+   ═══════════════════════════════════ */
+
+.page-hero {
+  height: 60vh;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-hero-title {
+  font-family: var(--serif);
+  font-size: clamp(48px, 10vw, 160px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+  text-align: center;
+  color: var(--bone);
+}
+
+.page-hero-title .outline {
+  -webkit-text-stroke: 1.5px var(--bone);
+  color: transparent;
+}
+
+.page-hero-title .accent {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.page-hero-subtitle {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-top: 40px;
+}
+
+/* ═══════════════════════════════════
+   WORKS GRID (works.html)
+   ═══════════════════════════════════ */
+
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 2px;
+}
+
+.works-grid-item {
+  position: relative;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: rgba(240, 236, 226, 0.02);
+}
+
+.works-grid-item canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.works-grid-item .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out-expo);
+  text-decoration: none;
+}
+
+.works-grid-item:hover .overlay { opacity: 1; }
+
+.works-grid-item .overlay .title {
+  font-family: var(--serif);
+  font-size: clamp(18px, 2vw, 28px);
+  font-style: italic;
+  color: var(--bone);
+  text-align: center;
+  padding: 0 20px;
+}
+
+.works-grid-item .overlay .meta {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+/* ═══════════════════════════════════
+   ABOUT PAGE
+   ═══════════════════════════════════ */
+
+.about-content {
+  padding: 120px 10vw;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 120px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-col-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 40px;
+}
+
+.about-text {
+  font-family: var(--serif);
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-style: italic;
+  line-height: 1.8;
+  color: rgba(240, 236, 226, 0.7);
+  margin-bottom: 30px;
+}
+
+.about-text em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.about-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 60px;
+}
+
+.about-stat-number {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5vw, 72px);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--bone);
+  line-height: 1;
+}
+
+.about-stat-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  margin-top: 10px;
+}
+
+/* ═══════════════════════════════════
+   CONTACT PAGE
+   ═══════════════════════════════════ */
+
+.contact-content {
+  padding: 120px 10vw;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contact-info-block {
+  margin-bottom: 50px;
+}
+
+.contact-info-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  margin-bottom: 16px;
+}
+
+.contact-info-value {
+  font-family: var(--serif);
+  font-size: clamp(18px, 2vw, 26px);
+  font-style: italic;
+  color: var(--bone);
+  line-height: 1.6;
+}
+
+.contact-info-value a {
+  color: var(--bone);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.contact-info-value a:hover { color: var(--accent); }
+
+/* Form */
+.contact-form { display: flex; flex-direction: column; gap: 36px; }
+
+.form-group { position: relative; }
+
+.form-group label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 12px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-med);
+  padding: 12px 0;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-style: italic;
+  color: var(--bone);
+  outline: none;
+  transition: border-color 0.3s;
+  -webkit-appearance: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--accent);
+}
+
+.form-group textarea {
+  resize: none;
+  min-height: 120px;
+  line-height: 1.8;
+}
+
+.form-group select option {
+  background: var(--ink);
+  color: var(--bone);
+}
+
+::placeholder {
+  color: var(--grey-dark);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════
+   EXHIBITION PAGE
+   ═══════════════════════════════════ */
+
+.exhibition-hero {
+  height: 80vh;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+
+.exhibition-hero-content {
+  text-align: center;
+  max-width: 700px;
+  padding: 0 40px;
+}
+
+.exhibition-hero-title {
+  font-family: var(--serif);
+  font-size: clamp(50px, 10vw, 140px);
+  font-weight: 900;
+  line-height: 0.95;
+  color: var(--bone);
+  margin-bottom: 20px;
+}
+
+.exhibition-hero-title .light {
+  font-weight: 400;
+  font-style: italic;
+  font-size: 0.4em;
+  color: var(--grey);
+  display: block;
+  margin-top: 16px;
+}
+
+.exhibition-details {
+  padding: 100px 10vw;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.exhibition-sidebar {
+  position: sticky;
+  top: 100px;
+  align-self: start;
+}
+
+.exhibition-detail-item {
+  margin-bottom: 36px;
+}
+
+.exhibition-detail-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  margin-bottom: 8px;
+}
+
+.exhibition-detail-value {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-style: italic;
+  color: var(--bone);
+  line-height: 1.6;
+}
+
+.exhibition-essay {
+  max-width: 600px;
+}
+
+.exhibition-essay p {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.5vw, 19px);
+  font-style: italic;
+  line-height: 2;
+  color: rgba(240, 236, 226, 0.6);
+  margin-bottom: 30px;
+}
+
+.exhibition-essay p em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.exhibition-essay .dropcap::first-letter {
+  font-size: 4em;
+  float: left;
+  line-height: 0.8;
+  margin-right: 12px;
+  margin-top: 8px;
+  color: var(--accent);
+  font-weight: 900;
+}
+
+/* ═══════════════════════════════════
+   ARTIST DETAIL PAGE
+   ═══════════════════════════════════ */
+
+.artist-detail-hero {
+  height: 60vh;
+  min-height: 400px;
+  display: flex;
+  align-items: flex-end;
+  padding: 80px 10vw;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.artist-detail-name {
+  font-family: var(--serif);
+  font-size: clamp(40px, 8vw, 100px);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--bone);
+  line-height: 1;
+}
+
+.artist-detail-discipline {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.artist-detail-content {
+  padding: 100px 10vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.artist-bio {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.5vw, 19px);
+  font-style: italic;
+  line-height: 2;
+  color: rgba(240, 236, 226, 0.6);
+}
+
+.artist-works-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.artist-work-thumb {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: rgba(240, 236, 226, 0.03);
+  position: relative;
+}
+
+.artist-work-thumb canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ═══════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════ */
+
+.footer {
+  padding: 100px 10vw 50px;
+  border-top: 1px solid var(--border);
+  position: relative;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 50px;
+  margin-bottom: 100px;
+}
+
+.footer-brand {
+  font-family: var(--serif);
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--bone);
+  letter-spacing: -0.03em;
+}
+
+.footer-tagline {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--grey-dark);
+  margin-top: 14px;
+  text-transform: uppercase;
+}
+
+.footer-col-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  margin-bottom: 24px;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.footer-links a {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone);
+  text-decoration: none;
+  opacity: 0.35;
+  transition: opacity 0.3s, color 0.3s;
+}
+
+.footer-links a:hover { opacity: 1; color: var(--accent); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 30px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(240, 236, 226, 0.15);
+}
+
+/* ═══════════════════════════════════
+   REVEAL ANIMATIONS
+   ═══════════════════════════════════ */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.reveal-line {
+  overflow: hidden;
+}
+
+.reveal-line span {
+  display: inline-block;
+  transform: translateY(115%);
+}
+
+.reveal-fade {
+  opacity: 0;
+}
+
+/* ═══════════════════════════════════
+   SEPARATOR
+   ═══════════════════════════════════ */
+
+.separator {
+  height: 1px;
+  background: var(--border);
+  margin: 0 10vw;
+}
+
+.separator-full {
+  height: 1px;
+  background: var(--border);
+}
+
+/* ═══════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .split-section { grid-template-columns: 1fr; }
+  .split-left { display: none; }
+  .split-right { padding: 80px 60px; }
+  .about-grid { grid-template-columns: 1fr; gap: 60px; }
+  .contact-grid { grid-template-columns: 1fr; gap: 60px; }
+  .exhibition-details { grid-template-columns: 1fr; gap: 60px; }
+  .exhibition-sidebar { position: static; }
+  .artist-detail-content { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .gallery-piece { width: 75vw; min-width: 280px; }
+  .nav-corner { font-size: 8px; letter-spacing: 2px; }
+  .nav-tl { top: 20px; left: 20px; }
+  .nav-tr { top: 20px; right: 20px; }
+  .nav-bl { bottom: 20px; left: 20px; }
+  .nav-br { bottom: 20px; right: 20px; }
+  .nav-center { top: 18px; }
+  .manifesto-number { display: none; }
+  .works-grid { grid-template-columns: 1fr 1fr; }
+  .about-stat-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+  .artist-works-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .works-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ CUSTOM CURSOR ═══ -->
+<div class="cursor-outer" id="cursorOuter"></div>
+<div class="cursor-inner" id="cursorInner"></div>
+<div class="cursor-label" id="cursorLabel"></div>
+
+<!-- ═══ PRELOADER ═══ -->
+<div class="preloader" id="preloader">
+  <div class="preloader-brand">AH'C</div>
+  <div class="preloader-text">Initialising experience</div>
+  <div class="preloader-counter" id="preloaderCount">000</div>
+  <div class="preloader-line">
+    <div class="preloader-fill" id="preloaderFill"></div>
+  </div>
+  <div class="preloader-text" id="preloaderStatus">Deconstructing paradigms...</div>
+</div>
+
+<!-- ═══ ANTI-NAV ═══ -->
+<div class="nav-corner nav-tl"><a href="#works">Works</a></div>
+<div class="nav-corner nav-tr"><a href="#about">About the void</a></div>
+<div class="nav-center"><a href="#">AH<span class="accent">'C</span></a></div>
+<div class="nav-corner nav-bl"><a href="#artists">Artists</a></div>
+<div class="nav-corner nav-br"><a href="#contact">Inquire</a></div>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+  <div class="hero-bg-noise"></div>
+  <div class="hero-title">
+    <div class="reveal-line"><span>AH</span></div>
+    <div class="reveal-line"><span class="italic">'C</span></div>
+  </div>
+  <div class="hero-subtitle reveal">Contemporary &nbsp;&nbsp;·&nbsp;&nbsp; Conceptual &nbsp;&nbsp;·&nbsp;&nbsp; Confrontational</div>
+  <div class="hero-year reveal">Est. MMXIV</div>
+  <div class="hero-scroll-indicator reveal">
+    <span>Descend</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ MARQUEE ═══════════════ -->
+<section class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item">The Absence of Presence <span class="divider">◆</span></span>
+    <span class="marquee-item">Object / Subject <span class="divider">◆</span></span>
+    <span class="marquee-item">Form Follows Void <span class="divider">◆</span></span>
+    <span class="marquee-item">Temporal Displacement <span class="divider">◆</span></span>
+    <span class="marquee-item">Beyond the Retinal <span class="divider">◆</span></span>
+    <span class="marquee-item">Post-Aesthetic Discourse <span class="divider">◆</span></span>
+    <span class="marquee-item">The Absence of Presence <span class="divider">◆</span></span>
+    <span class="marquee-item">Object / Subject <span class="divider">◆</span></span>
+    <span class="marquee-item">Form Follows Void <span class="divider">◆</span></span>
+    <span class="marquee-item">Temporal Displacement <span class="divider">◆</span></span>
+    <span class="marquee-item">Beyond the Retinal <span class="divider">◆</span></span>
+    <span class="marquee-item">Post-Aesthetic Discourse <span class="divider">◆</span></span>
+  </div>
+</section>
+
+<!-- ═══════════════ MANIFESTO ═══════════════ -->
+<section class="manifesto" id="about">
+  <div class="manifesto-content">
+    <span class="manifesto-label reveal">Curatorial Statement</span>
+    <p class="manifesto-text reveal">
+      We do not exhibit art. We <em>interrogate</em> the space between intention 
+      and interpretation, between the maker's hand and the viewer's gaze. 
+      Here, every wall is a question. Every silence, an answer.
+    </p>
+  </div>
+  <div class="manifesto-number" data-parallax="-0.3">01</div>
+</section>
+
+<!-- ═══════════════ MARQUEE 2 ═══════════════ -->
+<section class="marquee-section">
+  <div class="marquee-track reverse">
+    <span class="marquee-item">Nothing Is Permanent Except Impermanence <span class="divider">◆</span></span>
+    <span class="marquee-item">The Canvas Stares Back <span class="divider">◆</span></span>
+    <span class="marquee-item">Silence Between Notes <span class="divider">◆</span></span>
+    <span class="marquee-item">Deconstruct / Reconstruct <span class="divider">◆</span></span>
+    <span class="marquee-item">Nothing Is Permanent Except Impermanence <span class="divider">◆</span></span>
+    <span class="marquee-item">The Canvas Stares Back <span class="divider">◆</span></span>
+    <span class="marquee-item">Silence Between Notes <span class="divider">◆</span></span>
+    <span class="marquee-item">Deconstruct / Reconstruct <span class="divider">◆</span></span>
+  </div>
+</section>
+
+<!-- ═══════════════ HORIZONTAL GALLERY ═══════════════ -->
+<div class="gallery-label" id="works">Selected Works — 2024 / 2025</div>
+<section class="horizontal-section">
+  <div class="horizontal-track" id="horizontalTrack">
+
+    <div class="gallery-piece" data-cursor="View">
+      <a href="#works" style="text-decoration:none;color:inherit">
+        <div class="artwork-frame">
+          <img src="Mask.png" alt="Spirit and Teeth" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          <div class="artwork-overlay">
+            <span>Examine →</span>
+            <span class="artwork-number">I</span>
+          </div>
+        </div>
+        <div class="artwork-info">
+          <div>
+            <div class="artwork-title">Spirit and Teeth</div>
+            <div class="artwork-artist">Juan-Miguel Guimarães</div>
+            <div class="artwork-medium">Mixed media on bolsa, 180 × 240 cm</div>
+          </div>
+          <div style="text-align:right">
+            <div class="artwork-year">2024</div>
+            <div class="artwork-price">Price on request</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="gallery-piece" data-cursor="View">
+      <a href="#works" style="text-decoration:none;color:inherit">
+        <div class="artwork-frame">
+          <img src="cell.jpg" alt="Membrane Study No. 7" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          <div class="artwork-overlay">
+            <span>Examine →</span>
+            <span class="artwork-number">II</span>
+          </div>
+        </div>
+        <div class="artwork-info">
+          <div>
+            <div class="artwork-title">Membrane Study No. 7</div>
+            <div class="artwork-artist">N.E. Rogers</div>
+            <div class="artwork-medium">Mixed media, 120 × 160 cm</div>
+          </div>
+          <div style="text-align:right">
+            <div class="artwork-year">2025</div>
+            <div class="artwork-price">£42,000</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="gallery-piece" data-cursor="View">
+      <a href="#works" style="text-decoration:none;color:inherit">
+        <div class="artwork-frame">
+          <canvas class="artwork-canvas" data-index="2"></canvas>
+          <div class="artwork-overlay">
+            <span>Examine →</span>
+            <span class="artwork-number">III</span>
+          </div>
+        </div>
+        <div class="artwork-info">
+          <div>
+            <div class="artwork-title">The Weight of Looking</div>
+            <div class="artwork-artist">Elijah Craigl</div>
+            <div class="artwork-medium">Archival pigment print, 90 × 120 cm</div>
+          </div>
+          <div style="text-align:right">
+            <div class="artwork-year">2024</div>
+            <div class="artwork-price">£28,500</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="gallery-piece" data-cursor="View">
+      <a href="#works" style="text-decoration:none;color:inherit">
+        <div class="artwork-frame">
+          <canvas class="artwork-canvas" data-index="3"></canvas>
+          <div class="artwork-overlay">
+            <span>Examine →</span>
+            <span class="artwork-number">IV</span>
+          </div>
+        </div>
+        <div class="artwork-info">
+          <div>
+            <div class="artwork-title">Negative Space (Portrait)</div>
+            <div class="artwork-artist">Sable Okonkwo</div>
+            <div class="artwork-medium">Generative code, custom display</div>
+          </div>
+          <div style="text-align:right">
+            <div class="artwork-year">2025</div>
+            <div class="artwork-price">Sold</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="gallery-piece" data-cursor="View">
+      <a href="#works" style="text-decoration:none;color:inherit">
+        <div class="artwork-frame">
+          <canvas class="artwork-canvas" data-index="4"></canvas>
+          <div class="artwork-overlay">
+            <span>Examine →</span>
+            <span class="artwork-number">V</span>
+          </div>
+        </div>
+        <div class="artwork-info">
+          <div>
+            <div class="artwork-title">Dissolve (Triptych I)</div>
+            <div class="artwork-artist">Ines Okoro</div>
+            <div class="artwork-medium">Pigment on handmade paper, 200 × 150 cm</div>
+          </div>
+          <div style="text-align:right">
+            <div class="artwork-year">2024</div>
+            <div class="artwork-price">£65,000</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="gallery-piece" data-cursor="View">
+      <a href="#works" style="text-decoration:none;color:inherit">
+        <div class="artwork-frame">
+          <canvas class="artwork-canvas" data-index="5"></canvas>
+          <div class="artwork-overlay">
+            <span>Examine →</span>
+            <span class="artwork-number">VI</span>
+          </div>
+        </div>
+        <div class="artwork-info">
+          <div>
+            <div class="artwork-title">Threshold Condition</div>
+            <div class="artwork-artist">Felix Brandt</div>
+            <div class="artwork-medium">4K video loop, 12:47</div>
+          </div>
+          <div style="text-align:right">
+            <div class="artwork-year">2025</div>
+            <div class="artwork-price">Price on request</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ EXHIBITION SPLIT ═══════════════ -->
+<section class="split-section" id="exhibition">
+  <div class="split-left">
+    <div class="split-artwork" data-cursor="View">
+      <img src="Screen.gif" alt="Meat — Exhibition Preview" style="width:100%;height:100%;object-fit:cover;">
+    </div>
+  </div>
+  <div class="split-right">
+    <div class="exhibition-tag reveal">Current Exhibition</div>
+    <h2 class="exhibition-title reveal">
+      Meat<br>
+      <span class="light">(or How to Kill Oedipus in Cyberspace)</span>
+    </h2>
+    <p class="exhibition-body reveal">
+      A group exhibition exploring the spaces we cannot name — the doorways 
+      between perception and understanding, presence and memory.
+    </p>
+    <div class="exhibition-dates reveal">
+      06 Feb — 14 Apr 2026<br>
+      Gallery I, II &amp; The Vault
+    </div>
+    <a href="#exhibition" class="cta-line reveal">
+      Reserve private viewing
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════ MARQUEE 3 ═══════════════ -->
+<section class="marquee-section">
+  <div class="marquee-track fast">
+    <span class="marquee-item">Perception Is a Choice <span class="divider">◆</span></span>
+    <span class="marquee-item">Between Signal and Noise <span class="divider">◆</span></span>
+    <span class="marquee-item">The Eye Edits <span class="divider">◆</span></span>
+    <span class="marquee-item">Surface / Depth <span class="divider">◆</span></span>
+    <span class="marquee-item">Perception Is a Choice <span class="divider">◆</span></span>
+    <span class="marquee-item">Between Signal and Noise <span class="divider">◆</span></span>
+    <span class="marquee-item">The Eye Edits <span class="divider">◆</span></span>
+    <span class="marquee-item">Surface / Depth <span class="divider">◆</span></span>
+  </div>
+</section>
+
+<!-- ═══════════════ ARTISTS ═══════════════ -->
+<section class="artists-section" id="artists">
+  <h2 class="artists-heading reveal">
+    Represented<br><span class="outline">Artists</span>
+  </h2>
+
+  <a href="#artists" class="artist-row" data-cursor="Explore">
+    <span class="artist-index">01</span>
+    <span class="artist-name">Juan-Miguel Guimarães</span>
+    <span class="artist-discipline">Mixed Media / Sculpture</span>
+    <span class="artist-arrow">→</span>
+  </a>
+  <a href="#artists" class="artist-row" data-cursor="Explore">
+    <span class="artist-index">02</span>
+    <span class="artist-name">N.E. Rogers</span>
+    <span class="artist-discipline">Oil / Aluminium</span>
+    <span class="artist-arrow">→</span>
+  </a>
+  <a href="#artists" class="artist-row" data-cursor="Explore">
+    <span class="artist-index">03</span>
+    <span class="artist-name">Elijah Craigl</span>
+    <span class="artist-discipline">Photography / Installation</span>
+    <span class="artist-arrow">→</span>
+  </a>
+  <a href="#artists" class="artist-row" data-cursor="Explore">
+    <span class="artist-index">04</span>
+    <span class="artist-name">BigNig420</span>
+    <span class="artist-discipline">Digital / Generative</span>
+    <span class="artist-arrow">→</span>
+  </a>
+
+  <div style="margin-top:60px" class="reveal">
+    <a href="#artists" class="cta-line">
+      View all artists
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer" id="contact">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">AH'C</div>
+      <div class="footer-tagline">The space between looking and seeing</div>
+    </div>
+    <div>
+      <div class="footer-col-title">Visit</div>
+      <ul class="footer-links">
+        <li><a href="#contact">17 Wharf Lane</a></li>
+        <li><a href="#contact">London SE1 9DG</a></li>
+        <li><a href="#contact">Wed–Sun, 11–18</a></li>
+        <li><a href="#contact">By appointment</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Connect</div>
+      <ul class="footer-links">
+        <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="#about">Press</a></li>
+        <li><a href="#contact">Newsletter</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Inquiries</div>
+      <ul class="footer-links">
+        <li><a href="/cdn-cgi/l/email-protection#e087818c8c859299a0818883ce819294"><span class="__cf_email__" data-cfemail="6304020f0f06111a23020b004d021117">[email&#160;protected]</span></a></li>
+        <li><a href="tel:+442079460123">+44 20 7946 0123</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© MMXXVI AH'C Gallery. All rights observed.</span>
+    <span>Nothing here is accidental.</span>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ═══════════════════════════════════════════════════════
+   AH'C GALLERY — "Digital Brutalism" Experience Engine
+   ═══════════════════════════════════════════════════════ */
+
+// ────────────────────────────────
+//  CUSTOM CURSOR
+// ────────────────────────────────
+
+const Cursor = {
+  outer: null,
+  inner: null,
+  label: null,
+  mouseX: -100,
+  mouseY: -100,
+  outerX: -100,
+  outerY: -100,
+
+  init() {
+    this.outer = document.getElementById('cursorOuter');
+    this.inner = document.getElementById('cursorInner');
+    this.label = document.getElementById('cursorLabel');
+    if (!this.outer) return;
+
+    document.addEventListener('mousemove', (e) => {
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
+      this.inner.style.left = this.mouseX + 'px';
+      this.inner.style.top = this.mouseY + 'px';
+    });
+
+    // Hover states
+    document.querySelectorAll('[data-cursor]').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        const type = el.dataset.cursor;
+        this.outer.classList.add('hovering');
+        this.inner.classList.add('hidden');
+        if (type) {
+          this.label.textContent = type;
+          this.label.classList.add('visible');
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        this.outer.classList.remove('hovering');
+        this.inner.classList.remove('hidden');
+        this.label.classList.remove('visible');
+      });
+    });
+
+    // Links get subtle hover
+    document.querySelectorAll('a:not([data-cursor]), button:not([data-cursor])').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        this.outer.classList.add('hovering-sm');
+      });
+      el.addEventListener('mouseleave', () => {
+        this.outer.classList.remove('hovering-sm');
+      });
+    });
+
+    this.animate();
+  },
+
+  animate() {
+    this.outerX += (this.mouseX - this.outerX) * 0.1;
+    this.outerY += (this.mouseY - this.outerY) * 0.1;
+    if (this.outer) {
+      this.outer.style.left = this.outerX + 'px';
+      this.outer.style.top = this.outerY + 'px';
+    }
+    if (this.label) {
+      this.label.style.left = this.outerX + 'px';
+      this.label.style.top = this.outerY + 'px';
+    }
+    requestAnimationFrame(() => this.animate());
+  }
+};
+
+
+// ────────────────────────────────
+//  PRELOADER
+// ────────────────────────────────
+
+const Preloader = {
+  messages: [
+    'Deconstructing paradigms...',
+    'Calibrating the void...',
+    'Questioning everything...',
+    'Recontextualising space...',
+    'Dissolving boundaries...',
+    'Preparing silence...',
+    'Initialising experience...',
+    'Rendering the unseen...',
+    'Unlearning aesthetics...',
+  ],
+
+  run(callback) {
+    const preloader = document.getElementById('preloader');
+    if (!preloader) { callback(); return; }
+
+    const counter = document.getElementById('preloaderCount');
+    const fill = document.getElementById('preloaderFill');
+    const status = document.getElementById('preloaderStatus');
+    let count = 0;
+    let msgIndex = 0;
+
+    const interval = setInterval(() => {
+      count += Math.floor(Math.random() * 4) + 1;
+      if (count > 100) count = 100;
+
+      counter.textContent = String(count).padStart(3, '0');
+      if (fill) fill.style.width = count + '%';
+
+      if (count % 15 === 0 || count > 88) {
+        msgIndex = (msgIndex + 1) % this.messages.length;
+        if (status) {
+          gsap.to(status, {
+            opacity: 0, duration: 0.15, onComplete: () => {
+              status.textContent = this.messages[msgIndex];
+              gsap.to(status, { opacity: 1, duration: 0.15 });
+            }
+          });
+        }
+      }
+
+      if (count >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          gsap.to(preloader, {
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.inOut',
+            onComplete: () => {
+              preloader.style.display = 'none';
+              callback();
+            }
+          });
+        }, 500);
+      }
+    }, 45);
+  }
+};
+
+
+// ────────────────────────────────
+//  PAGE TRANSITIONS
+// ────────────────────────────────
+
+const PageTransition = {
+  overlay: null,
+
+  init() {
+    // Create transition overlay
+    this.overlay = document.createElement('div');
+    this.overlay.className = 'page-transition';
+    for (let i = 0; i < 5; i++) {
+      const col = document.createElement('div');
+      col.className = 'col';
+      this.overlay.appendChild(col);
+    }
+    document.body.appendChild(this.overlay);
+
+    // Intercept internal links
+    document.querySelectorAll('a[href]').forEach(link => {
+      const href = link.getAttribute('href');
+      if (!href) return;
+      if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('http')) return;
+
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.navigate(href);
+      });
+    });
+
+    // Run leave animation on load
+    this.overlay.classList.add('leaving');
+    setTimeout(() => {
+      this.overlay.classList.remove('leaving');
+    }, 800);
+  },
+
+  navigate(url) {
+    this.overlay.classList.add('entering');
+    setTimeout(() => {
+      window.location.href = url;
+    }, 700);
+  }
+};
+
+
+// ────────────────────────────────
+//  LENIS SMOOTH SCROLL
+// ────────────────────────────────
+
+let lenisInstance = null;
+
+function initLenis() {
+  if (typeof Lenis === 'undefined') return null;
+  
+  lenisInstance = new Lenis({
+    duration: 1.6,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    orientation: 'vertical',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
+    touchMultiplier: 1.5,
+  });
+
+  lenisInstance.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenisInstance.raf(time * 1000); });
+  gsap.ticker.lagSmoothing(0);
+
+  return lenisInstance;
+}
+
+
+// ────────────────────────────────
+//  WEBGL GENERATIVE ARTWORKS
+// ────────────────────────────────
+
+const ArtworkEngine = {
+  artworks: [],
+  colorPalettes: [
+    { bg: [0.04, 0.04, 0.04], c1: [0.77, 0.66, 0.50], c2: [0.94, 0.93, 0.88] },
+    { bg: [0.06, 0.05, 0.08], c1: [0.45, 0.35, 0.55], c2: [0.85, 0.80, 0.90] },
+    { bg: [0.03, 0.05, 0.06], c1: [0.30, 0.55, 0.60], c2: [0.88, 0.92, 0.90] },
+    { bg: [0.06, 0.04, 0.03], c1: [0.70, 0.40, 0.25], c2: [0.95, 0.90, 0.82] },
+    { bg: [0.05, 0.05, 0.04], c1: [0.55, 0.65, 0.40], c2: [0.90, 0.92, 0.85] },
+    { bg: [0.04, 0.03, 0.06], c1: [0.60, 0.30, 0.50], c2: [0.92, 0.85, 0.90] },
+    { bg: [0.05, 0.04, 0.04], c1: [0.80, 0.50, 0.40], c2: [0.96, 0.92, 0.88] },
+    { bg: [0.03, 0.04, 0.05], c1: [0.40, 0.50, 0.65], c2: [0.86, 0.90, 0.94] },
+    { bg: [0.04, 0.05, 0.03], c1: [0.65, 0.70, 0.35], c2: [0.92, 0.94, 0.86] },
+  ],
+
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+
+  fragmentShader: `
+    uniform float uTime;
+    uniform vec2 uMouse;
+    uniform float uHover;
+    uniform vec3 uBg;
+    uniform vec3 uC1;
+    uniform vec3 uC2;
+    uniform float uSeed;
+    varying vec2 vUv;
+
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
+    vec2 mod289(vec2 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
+    vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+    float snoise(vec2 v) {
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                         -0.577350269189626, 0.024390243902439);
+      vec2 i = floor(v + dot(v, C.yy));
+      vec2 x0 = v - i + dot(i, C.xx);
+      vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod289(i);
+      vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+      m = m*m; m = m*m;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+      vec3 g;
+      g.x = a0.x * x0.x + h.x * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
+
+    void main() {
+      vec2 uv = vUv;
+      
+      // Hover distortion — ripple/liquify
+      float dist = distance(uv, uMouse);
+      float ripple = sin(dist * 25.0 - uTime * 4.0) * 0.025 * uHover;
+      float warp = sin(dist * 8.0 + uTime * 2.0) * 0.01 * uHover;
+      vec2 distortion = vec2(
+        smoothstep(0.5, 0.0, dist) * (ripple + warp),
+        smoothstep(0.5, 0.0, dist) * (ripple - warp)
+      );
+      uv += distortion;
+
+      float t = uTime * 0.12;
+      float s = uSeed;
+      
+      // Layered noise
+      float n1 = snoise(uv * 2.5 + vec2(t + s, s * 2.0)) * 0.5 + 0.5;
+      float n2 = snoise(uv * 5.0 + vec2(s * 3.0, t * 0.7)) * 0.5 + 0.5;
+      float n3 = snoise(uv * 1.2 + vec2(t * 0.3 + s, -t * 0.2)) * 0.5 + 0.5;
+      float n4 = snoise(uv * 8.0 + vec2(-s, t * 0.5 + s)) * 0.5 + 0.5;
+      float n5 = snoise(uv * 15.0 + vec2(s * 1.5, t * 0.3)) * 0.5 + 0.5;
+
+      // Color composition
+      vec3 col = uBg;
+      col = mix(col, uC1, smoothstep(0.3, 0.7, n1) * 0.8);
+      col = mix(col, uC2, smoothstep(0.5, 0.8, n2) * 0.4);
+      col = mix(col, uC1 * 0.5, smoothstep(0.4, 0.6, n3) * 0.3);
+      col = mix(col, (uC1 + uC2) * 0.5, smoothstep(0.55, 0.7, n5) * 0.15);
+      
+      // Texture
+      col += n4 * 0.05 - 0.025;
+      
+      // Vignette
+      float vig = 1.0 - smoothstep(0.3, 1.5, length(uv - 0.5) * 1.6);
+      col *= vig;
+      
+      // Film grain
+      float grain = (fract(sin(dot(uv * 1000.0 + uTime, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.04;
+      col += grain;
+
+      // Hover glow
+      float glow = smoothstep(0.35, 0.0, dist) * uHover * 0.2;
+      col += glow * uC2;
+
+      // Colour shift on hover
+      col = mix(col, col.gbr * 1.1, uHover * 0.15 * smoothstep(0.5, 0.0, dist));
+
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `,
+
+  initCanvas(canvas, index, interactive) {
+    const parent = canvas.parentElement;
+    const rect = parent.getBoundingClientRect();
+    
+    if (rect.width === 0 || rect.height === 0) return null;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    renderer.setSize(rect.width, rect.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0.1, 10);
+    camera.position.z = 1;
+
+    const colors = this.colorPalettes[index % this.colorPalettes.length];
+    const uniforms = {
+      uTime: { value: Math.random() * 100 },
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+      uHover: { value: 0 },
+      uBg: { value: new THREE.Vector3(...colors.bg) },
+      uC1: { value: new THREE.Vector3(...colors.c1) },
+      uC2: { value: new THREE.Vector3(...colors.c2) },
+      uSeed: { value: index * 7.37 + 1.23 },
+    };
+
+    const material = new THREE.ShaderMaterial({
+      vertexShader: this.vertexShader,
+      fragmentShader: this.fragmentShader,
+      uniforms
+    });
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+    scene.add(plane);
+
+    let isHovering = false;
+
+    if (interactive !== false) {
+      parent.addEventListener('mousemove', (e) => {
+        const r = parent.getBoundingClientRect();
+        uniforms.uMouse.value.set(
+          (e.clientX - r.left) / r.width,
+          1.0 - (e.clientY - r.top) / r.height
+        );
+      });
+      parent.addEventListener('mouseenter', () => { isHovering = true; });
+      parent.addEventListener('mouseleave', () => { isHovering = false; });
+    }
+
+    const artwork = { renderer, scene, camera, uniforms, isHovering: () => isHovering, rect };
+    this.artworks.push(artwork);
+    return artwork;
+  },
+
+  initAll() {
+    // Gallery canvases
+    document.querySelectorAll('.artwork-canvas').forEach((canvas, i) => {
+      this.initCanvas(canvas, parseInt(canvas.dataset.index || i, 10), true);
+    });
+
+    // Works grid canvases
+    document.querySelectorAll('.works-grid-canvas').forEach((canvas, i) => {
+      this.initCanvas(canvas, parseInt(canvas.dataset.index || i, 10), true);
+    });
+
+    // Split canvas
+    const splitCanvas = document.getElementById('splitCanvas');
+    if (splitCanvas) {
+      this.initCanvas(splitCanvas, 8, false);
+    }
+
+    // Artist work thumbnails
+    document.querySelectorAll('.artist-thumb-canvas').forEach((canvas, i) => {
+      this.initCanvas(canvas, parseInt(canvas.dataset.index || i, 10) + 3, true);
+    });
+
+    // Start render loop
+    if (this.artworks.length > 0) {
+      this.render(performance.now());
+    }
+  },
+
+  render(time) {
+    this.artworks.forEach(a => {
+      a.uniforms.uTime.value = time * 0.001;
+      const target = a.isHovering() ? 1 : 0;
+      a.uniforms.uHover.value += (target - a.uniforms.uHover.value) * 0.06;
+      a.renderer.render(a.scene, a.camera);
+    });
+    requestAnimationFrame((t) => this.render(t));
+  }
+};
+
+
+// ────────────────────────────────
+//  GSAP SCROLL ANIMATIONS
+// ────────────────────────────────
+
+const Animations = {
+  init() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Basic reveal
+    gsap.utils.toArray('.reveal').forEach(el => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1, y: 0,
+          duration: 1.3,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 88%',
+          }
+        }
+      );
+    });
+
+    // Reveal fade (no movement)
+    gsap.utils.toArray('.reveal-fade').forEach(el => {
+      gsap.fromTo(el,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 1.5,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+          }
+        }
+      );
+    });
+
+    // Hero text reveal lines
+    gsap.utils.toArray('.reveal-line span').forEach((span, i) => {
+      gsap.to(span, {
+        y: 0,
+        duration: 1.6,
+        ease: 'power4.out',
+        delay: 0.2 * i,
+      });
+    });
+
+    // Artist rows stagger
+    gsap.utils.toArray('.artist-row').forEach(row => {
+      gsap.fromTo(row,
+        { opacity: 0, x: -40 },
+        {
+          opacity: 1, x: 0,
+          duration: 0.9,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: row,
+            start: 'top 92%',
+          }
+        }
+      );
+    });
+
+    // Parallax elements
+    gsap.utils.toArray('[data-parallax]').forEach(el => {
+      const speed = parseFloat(el.dataset.parallax) || 0.2;
+      gsap.to(el, {
+        y: () => speed * 100,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1.5,
+        }
+      });
+    });
+  },
+
+  initHorizontalScroll() {
+    const track = document.getElementById('horizontalTrack');
+    const section = document.querySelector('.horizontal-section');
+    if (!track || !section) return;
+
+    const totalScroll = track.scrollWidth - window.innerWidth;
+
+    gsap.to(track, {
+      x: -totalScroll,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${totalScroll}`,
+        scrub: 2,
+        pin: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+      }
+    });
+  }
+};
+
+
+// ────────────────────────────────
+//  SMOOTH SCROLL ANCHORS
+// ────────────────────────────────
+
+function initAnchorLinks() {
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = link.getAttribute('href');
+      if (id === '#') return;
+      const target = document.querySelector(id);
+      if (!target) return;
+
+      if (lenisInstance) {
+        lenisInstance.scrollTo(target, { duration: 2 });
+      } else {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+}
+
+
+// ────────────────────────────────
+//  GLOBAL INIT
+// ────────────────────────────────
+
+function initSite() {
+  // Lenis
+  initLenis();
+
+  // Page transitions
+  PageTransition.init();
+
+  // Animations
+  Animations.init();
+  Animations.initHorizontalScroll();
+
+  // WebGL
+  ArtworkEngine.initAll();
+
+  // Anchors
+  initAnchorLinks();
+
+  // Refresh ScrollTrigger after everything is loaded
+  setTimeout(function() { ScrollTrigger.refresh(); }, 200);
+}
+
+// Boot
+document.addEventListener('DOMContentLoaded', function() {
+  Cursor.init();
+
+  var hasPreloader = document.getElementById('preloader');
+  if (hasPreloader) {
+    Preloader.run(function() {
+      document.body.style.overflow = '';
+      initSite();
+    });
+  } else {
+    initSite();
+  }
+});
+</script>
+</body>
+</html>
