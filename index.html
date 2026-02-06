@@ -129,8 +129,6 @@ img { display: block; max-width: 100%; }
    CUSTOM CURSOR
    ═══════════════════════════════════ */
 
-/* Update these 3 blocks in your CSS */
-
 .cursor-outer {
   position: fixed;
   width: 48px;
@@ -729,9 +727,10 @@ img { display: block; max-width: 100%; }
   border: 1px solid var(--border-med);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 10%;
-  overflow-y: auto;
+  justify-content: flex-start; /* CHANGED from center to allow scrolling from top */
+  padding: 30px;               /* Consistent padding */
+  overflow-y: auto;            /* ENABLE SCROLLING for the text */
+  scrollbar-width: none;       /* Hide scrollbar for Firefox */
 }
 
 .artwork-back-label {
@@ -799,15 +798,18 @@ img { display: block; max-width: 100%; }
 }
 
 .artwork-back-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  position: sticky;            /* CHANGED from absolute so it stays visible while scrolling */
+  top: 0;
+  right: 0;
+  align-self: flex-end;        /* Keeps it to the right */
+  margin-bottom: 20px;
+  z-index: 10;
   font-family: var(--mono);
   font-size: 8px;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--grey);
-  background: none;
+  background: var(--ink);      /* Added background so text doesn't bleed under it */
   border: 1px solid var(--border-med);
   padding: 8px 14px;
   transition: color 0.3s, border-color 0.3s;
@@ -816,6 +818,10 @@ img { display: block; max-width: 100%; }
 .artwork-back-close:hover {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+.artwork-back::-webkit-scrollbar {
+  display: none;
 }
 
 /* ═══════════════════════════════════
@@ -2041,13 +2047,13 @@ img { display: block; max-width: 100%; }
         <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
           <div class="artwork-card">
             <div class="artwork-front">
-              <img src="Mask.png" alt="Untitled (Erosion IV)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+              <img src="Mask.png" alt="Spirit and Teeth" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
               <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">I</span></div>
             </div>
             <div class="artwork-back">
               <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
               <span class="artwork-back-label">About this work</span>
-              <div class="artwork-back-title">Untitled (Erosion IV)</div>
+              <div class="artwork-back-title">Spirit and Teeth</div>
               <div class="artwork-back-artist">Juan-Miguel Guimarães</div>
               <div class="artwork-back-desc">A visceral meditation on ancestral memory and bodily inheritance. Guimarães layers organic pigments with found textile fragments — linen sourced from his grandmother's workshop in Porto — creating surfaces that appear to breathe, decay, and regenerate simultaneously. The mask motif recurs throughout his practice as a threshold between the visible self and the inherited other.</div>
               <div class="artwork-back-details">
@@ -2060,7 +2066,7 @@ img { display: block; max-width: 100%; }
         </div>
         <div class="artwork-info">
           <div>
-            <div class="artwork-title">Untitled (Erosion IV)</div>
+            <div class="artwork-title">Spirit and Teeth</div>
             <div class="artwork-artist">Juan-Miguel Guimarães</div>
             <div class="artwork-medium">Mixed media on linen, 180 × 240 cm</div>
           </div>
@@ -2082,7 +2088,7 @@ img { display: block; max-width: 100%; }
               <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
               <span class="artwork-back-label">About this work</span>
               <div class="artwork-back-title">Membrane Study No. 7</div>
-              <div class="artwork-back-artist">N.E. Rogers</div>
+              <div class="artwork-back-artist">Elija Craigl</div>
               <div class="artwork-back-desc">Rogers' ongoing Membrane series investigates the liminal spaces between cellular biology and architectural form. Working with oil on raw aluminium, each piece captures the moment a boundary becomes permeable — when inside and outside lose their meaning. The reflective substrate creates a shifting dialogue between pigment and viewer, ensuring no two encounters with the work are identical.</div>
               <div class="artwork-back-details">
                 <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Oil on aluminium</div></div>
@@ -2095,7 +2101,7 @@ img { display: block; max-width: 100%; }
         <div class="artwork-info">
           <div>
             <div class="artwork-title">Membrane Study No. 7</div>
-            <div class="artwork-artist">N.E. Rogers</div>
+            <div class="artwork-artist">Elijah Craigl</div>
             <div class="artwork-medium">Oil on aluminium, 120 × 160 cm</div>
           </div>
           <div style="text-align:right">
@@ -2115,8 +2121,8 @@ img { display: block; max-width: 100%; }
             <div class="artwork-back">
               <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
               <span class="artwork-back-label">About this work</span>
-              <div class="artwork-back-title">The Weight of Looking</div>
-              <div class="artwork-back-artist">Elijah Craigl</div>
+              <div class="artwork-back-title">Meat (or How to Kill Oedipus in Cyberspace)</div>
+              <div class="artwork-back-artist">N.E. Rogers</div>
               <div class="artwork-back-desc">Craigl's photographic practice dismantles the authority of the gaze. Shot on large-format film in abandoned institutional spaces across the American Midwest, each image is then subjected to chemical interference — bleaching, re-exposing, layering — until the photograph forgets what it was meant to document. What remains is the residue of attention itself.</div>
               <div class="artwork-back-details">
                 <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Archival pigment print</div></div>
@@ -2128,115 +2134,13 @@ img { display: block; max-width: 100%; }
         </div>
         <div class="artwork-info">
           <div>
-            <div class="artwork-title">The Weight of Looking</div>
-            <div class="artwork-artist">Elijah Craigl</div>
+            <div class="artwork-title">Meat (or How to Kill Oedipus in Cyberspace)</div>
+            <div class="artwork-artist">N.E. Rogers</div>
             <div class="artwork-medium">Archival pigment print, 90 × 120 cm</div>
           </div>
           <div style="text-align:right">
             <div class="artwork-year">2024</div>
             <div class="artwork-price">£28,500</div>
-          </div>
-        </div>
-    </div>
-
-    <div class="gallery-piece" data-cursor="View">
-        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
-          <div class="artwork-card">
-            <div class="artwork-front">
-              <canvas class="artwork-canvas" data-index="3"></canvas>
-              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">IV</span></div>
-            </div>
-            <div class="artwork-back">
-              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
-              <span class="artwork-back-label">About this work</span>
-              <div class="artwork-back-title">Negative Space (Portrait)</div>
-              <div class="artwork-back-artist">Sable Okonkwo</div>
-              <div class="artwork-back-desc">Okonkwo's generative code works exist at the intersection of portraiture and erasure. Custom algorithms trained on archival photographs from the Nigerian National Museum produce forms that hover between recognition and abstraction — faces that are simultaneously everyone and no one. Each display renders a unique iteration; the portrait is never the same twice.</div>
-              <div class="artwork-back-details">
-                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Generative code</div></div>
-                <div><div class="artwork-back-detail-label">Display</div><div class="artwork-back-detail-value">Custom hardware</div></div>
-                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2025</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="artwork-info">
-          <div>
-            <div class="artwork-title">Negative Space (Portrait)</div>
-            <div class="artwork-artist">Sable Okonkwo</div>
-            <div class="artwork-medium">Generative code, custom display</div>
-          </div>
-          <div style="text-align:right">
-            <div class="artwork-year">2025</div>
-            <div class="artwork-price">Sold</div>
-          </div>
-        </div>
-    </div>
-
-    <div class="gallery-piece" data-cursor="View">
-        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
-          <div class="artwork-card">
-            <div class="artwork-front">
-              <canvas class="artwork-canvas" data-index="4"></canvas>
-              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">V</span></div>
-            </div>
-            <div class="artwork-back">
-              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
-              <span class="artwork-back-label">About this work</span>
-              <div class="artwork-back-title">Dissolve (Triptych I)</div>
-              <div class="artwork-back-artist">Ines Okoro</div>
-              <div class="artwork-back-desc">The first panel of Okoro's monumental triptych explores chromatic dissolution as a metaphor for memory loss. Working exclusively with hand-ground pigments on paper she fabricates herself from cotton and abacá fibres, Okoro builds up hundreds of translucent washes until form emerges from — and retreats back into — pure colour. The paper itself becomes the subject.</div>
-              <div class="artwork-back-details">
-                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Pigment on handmade paper</div></div>
-                <div><div class="artwork-back-detail-label">Size</div><div class="artwork-back-detail-value">200 × 150 cm</div></div>
-                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2024</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="artwork-info">
-          <div>
-            <div class="artwork-title">Dissolve (Triptych I)</div>
-            <div class="artwork-artist">Ines Okoro</div>
-            <div class="artwork-medium">Pigment on handmade paper, 200 × 150 cm</div>
-          </div>
-          <div style="text-align:right">
-            <div class="artwork-year">2024</div>
-            <div class="artwork-price">£65,000</div>
-          </div>
-        </div>
-    </div>
-
-    <div class="gallery-piece" data-cursor="View">
-        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
-          <div class="artwork-card">
-            <div class="artwork-front">
-              <canvas class="artwork-canvas" data-index="5"></canvas>
-              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">VI</span></div>
-            </div>
-            <div class="artwork-back">
-              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
-              <span class="artwork-back-label">About this work</span>
-              <div class="artwork-back-title">Threshold Condition</div>
-              <div class="artwork-back-artist">Felix Brandt</div>
-              <div class="artwork-back-desc">Brandt's durational video work captures the precise moment of transition — doors closing, tides turning, light shifting from day to night. Shot across twelve cities over eighteen months, the piece is presented as an infinite loop where endings perpetually become beginnings. The soundtrack, composed from field recordings at each location, collapses geography into a single continuous present.</div>
-              <div class="artwork-back-details">
-                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">4K video loop</div></div>
-                <div><div class="artwork-back-detail-label">Duration</div><div class="artwork-back-detail-value">12:47</div></div>
-                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2025</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="artwork-info">
-          <div>
-            <div class="artwork-title">Threshold Condition</div>
-            <div class="artwork-artist">Felix Brandt</div>
-            <div class="artwork-medium">4K video loop, 12:47</div>
-          </div>
-          <div style="text-align:right">
-            <div class="artwork-year">2025</div>
-            <div class="artwork-price">Price on request</div>
           </div>
         </div>
     </div>
@@ -2313,30 +2217,6 @@ img { display: block; max-width: 100%; }
     <span class="artist-discipline">Photography / Installation</span>
     <span class="artist-arrow">→</span>
   </a>
-  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="3" onclick="ArtistOverlay.open(3)">
-    <span class="artist-index">04</span>
-    <span class="artist-name">Sable Okonkwo</span>
-    <span class="artist-discipline">Digital / Generative</span>
-    <span class="artist-arrow">→</span>
-  </a>
-  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="4" onclick="ArtistOverlay.open(4)">
-    <span class="artist-index">05</span>
-    <span class="artist-name">Ines Okoro</span>
-    <span class="artist-discipline">Pigment on Paper</span>
-    <span class="artist-arrow">→</span>
-  </a>
-  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="5" onclick="ArtistOverlay.open(5)">
-    <span class="artist-index">06</span>
-    <span class="artist-name">Felix Brandt</span>
-    <span class="artist-discipline">Video / Performance</span>
-    <span class="artist-arrow">→</span>
-  </a>
-  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="6" onclick="ArtistOverlay.open(6)">
-    <span class="artist-index">07</span>
-    <span class="artist-name">Yuki Nakamura</span>
-    <span class="artist-discipline">Ceramic / Sound</span>
-    <span class="artist-arrow">→</span>
-  </a>
 
   <div style="margin-top:60px" class="reveal">
     <a href="#artists" class="cta-line">
@@ -2377,8 +2257,6 @@ img { display: block; max-width: 100%; }
       <div class="footer-col-title">Connect</div>
       <ul class="footer-links">
         <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
-        <li><a href="#about">Press</a></li>
-        <li><a href="#contact">Newsletter</a></li>
       </ul>
     </div>
     <div>
@@ -3046,7 +2924,7 @@ var ArtistOverlay = (function() {
         { name: 'Material Witness', venue: 'Whitechapel Gallery, London \u2014 2023' },
       ],
       works: [
-        { title: 'Untitled (Erosion IV)', year: '2024' },
+        { title: 'Spirit and Teeth', year: '2024' },
         { title: 'Spirit and Teeth', year: '2024' },
         { title: 'Bolsa Triptych', year: '2023' },
         { title: 'Grandmother\u2019s Hands', year: '2022' },
@@ -3093,94 +2971,13 @@ var ArtistOverlay = (function() {
         { title: 'Overexposed (Chicago)', year: '2022' },
       ]
     },
-    {
-      name: 'Sable Okonkwo',
-      discipline: 'Digital / Generative',
-      location: 'Lagos / London',
-      born: 'b. 1994, Lagos',
-      quote: '\u201CCode is just another medium. The algorithm doesn\u2019t create art \u2014 it reveals the art that was always latent in the data.\u201D',
-      bio: 'Sable Okonkwo holds dual degrees in Computer Science from the University of Lagos and Fine Art from Goldsmiths. Her practice sits at the exact intersection of programming and portraiture: custom neural networks trained on archival photographs from the Nigerian National Museum generate faces that hover between recognition and pure abstraction. Each display renders a unique iteration \u2014 the portrait is never the same twice. Okonkwo\u2019s work asks who gets to be remembered, how archives construct identity, and whether an algorithm can mourn.',
-      exhibitions: [
-        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
-        { name: 'Digital Earth', venue: 'Serpentine Gallery, London \u2014 2025' },
-        { name: 'The Archive Looks Back', venue: 'Lagos Biennial \u2014 2024' },
-        { name: 'Coded Futures', venue: 'Haus der Kunst, Munich \u2014 2024' },
-      ],
-      works: [
-        { title: 'Negative Space (Portrait)', year: '2025' },
-        { title: 'Archive Ghosts I\u2013IV', year: '2024' },
-        { title: 'Who Remembers', year: '2024' },
-        { title: 'Latent Face', year: '2023' },
-      ]
-    },
-    {
-      name: 'Ines Okoro',
-      discipline: 'Pigment on Paper',
-      location: 'S\u00e3o Paulo / Lisbon',
-      born: 'b. 1990, S\u00e3o Paulo',
-      quote: '\u201CI grind every pigment by hand. The colour must pass through the body before it reaches the paper.\u201D',
-      bio: 'Ines Okoro descends from a family of papermakers in Minas Gerais. After studying at the Escola de Belas Artes in Lisbon, she returned to her family\u2019s craft, fabricating her own substrates from cotton, abac\u00e1, and occasionally human hair. Her paintings \u2014 if they can be called that \u2014 consist of hundreds of translucent washes of hand-ground mineral pigment, building forms that emerge from and dissolve back into pure chromatic fields. The Dissolve series, her most ambitious undertaking, is a nine-panel meditation on colour as grief.',
-      exhibitions: [
-        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
-        { name: 'Chromatic Grief', venue: 'Pinacoteca, S\u00e3o Paulo \u2014 2025' },
-        { name: 'Dissolve', venue: 'Museu Berardo, Lisbon \u2014 2024' },
-        { name: 'On Paper', venue: 'Fondation Beyeler, Basel \u2014 2023' },
-      ],
-      works: [
-        { title: 'Dissolve (Triptych I)', year: '2024' },
-        { title: 'Dissolve (Triptych II)', year: '2024' },
-        { title: 'Mineral Study: Ochre', year: '2023' },
-        { title: 'Paper as Skin', year: '2022' },
-      ]
-    },
-    {
-      name: 'Felix Brandt',
-      discipline: 'Video / Performance',
-      location: 'Hamburg / London',
-      born: 'b. 1988, Hamburg',
-      quote: '\u201CDuration is the only honest medium. Everything else is a snapshot pretending to be complete.\u201D',
-      bio: 'Felix Brandt spent five years as a concert pianist before pivoting to time-based media. His video works are exercises in radical patience: single-take recordings of thresholds \u2014 doors closing, tides turning, seasons shifting \u2014 presented as infinite loops where endings perpetually become beginnings. Each piece is accompanied by a soundtrack composed from field recordings made at the filming location, collapsing geography into pure temporal experience. His performances, often lasting eight to twelve hours, test the endurance of both artist and audience.',
-      exhibitions: [
-        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
-        { name: 'The Long Take', venue: 'Hamburger Bahnhof, Berlin \u2014 2025' },
-        { name: 'Threshold', venue: 'Barbican Centre, London \u2014 2024' },
-        { name: 'Slow Violence', venue: 'documenta fifteen \u2014 2022' },
-      ],
-      works: [
-        { title: 'Threshold Condition', year: '2025' },
-        { title: 'Door (12 Cities)', year: '2024' },
-        { title: 'Tide Study', year: '2023' },
-        { title: 'Eight Hours', year: '2022' },
-      ]
-    },
-    {
-      name: 'Yuki Nakamura',
-      discipline: 'Ceramic / Sound',
-      location: 'Kyoto / London',
-      born: 'b. 1991, Kyoto',
-      quote: '\u201CClay and sound are the same material \u2014 they both require you to listen with your hands.\u201D',
-      bio: 'Yuki Nakamura trained in traditional Raku pottery under her grandfather before studying electroacoustic composition at the Royal Academy of Music. Her practice synthesises these two worlds: ceramic vessels designed not as visual objects but as acoustic instruments, resonating chambers that transform ambient sound into something between music and sculpture. Each piece is tuned to a specific harmonic frequency, and exhibitions are orchestrated so that the collective hum of the vessels creates an immersive, site-specific composition that shifts as visitors move through the space.',
-      exhibitions: [
-        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
-        { name: 'Resonance', venue: 'Kyoto Art Centre \u2014 2025' },
-        { name: 'Listening Vessels', venue: 'Camden Arts Centre, London \u2014 2024' },
-        { name: 'Sound & Clay', venue: 'Mori Art Museum, Tokyo \u2014 2023' },
-      ],
-      works: [
-        { title: 'Vessel (A\u266D)', year: '2025' },
-        { title: 'Chamber Music I\u2013III', year: '2024' },
-        { title: 'Raku Song', year: '2023' },
-        { title: 'Silence Pot', year: '2022' },
-      ]
-    },
   ];
 
-  function open(id) {
+function open(id) {
     var artist = artists[id];
     if (!artist) return;
     var pal = palettes[id] || palettes[0];
 
-    // Remove any existing overlay clone
     var old = document.getElementById('artistDetailPage');
     if (old) old.remove();
 
@@ -3193,9 +2990,9 @@ var ArtistOverlay = (function() {
     var exHTML = '';
     for (var i = 0; i < artist.exhibitions.length; i++) {
       var ex = artist.exhibitions[i];
-      exHTML += '<div style="padding:16px 0;border-bottom:1px solid rgba(240,236,226,0.08);display:flex;justify-content:space-between;align-items:baseline;gap:20px;' + (i === 0 ? 'border-top:1px solid rgba(240,236,226,0.08);' : '') + '">' +
-        '<span style="font-family:\'Playfair Display\',Georgia,serif;font-size:15px;font-style:italic;color:#f0ece2">' + ex.name + '</span>' +
-        '<span style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:8px;letter-spacing:2px;color:#444440;text-transform:uppercase;text-align:right;flex-shrink:0">' + ex.venue + '</span>' +
+      exHTML += '<div style="padding:12px 0;border-bottom:1px solid rgba(240,236,226,0.08);display:flex;justify-content:space-between;align-items:baseline;gap:20px;">' +
+        '<span style="font-family:\'Playfair Display\',serif;font-size:14px;font-style:italic;color:#f0ece2">' + ex.name + '</span>' +
+        '<span style="font-family:\'Space Mono\',monospace;font-size:8px;letter-spacing:1px;color:#444440;text-transform:uppercase;">' + ex.venue + '</span>' +
       '</div>';
     }
 
@@ -3205,78 +3002,67 @@ var ArtistOverlay = (function() {
       var w = artist.works[j];
       var bg = pal.works[j % pal.works.length];
       wHTML += '<div style="aspect-ratio:1;position:relative;overflow:hidden;background:' + bg + '">' +
-        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;background:linear-gradient(transparent 40%,rgba(10,10,10,0.8));opacity:0;transition:opacity 0.3s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">' +
-          '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:14px;font-style:italic;color:#f0ece2">' + w.title + '</div>' +
-          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:8px;letter-spacing:2px;color:#444440;margin-top:4px">' + w.year + '</div>' +
+        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;background:linear-gradient(transparent 40%,rgba(10,10,10,0.8));opacity:0;transition:opacity 0.3s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">' +
+          '<div style="font-family:\'Playfair Display\',serif;font-size:12px;font-style:italic;color:#f0ece2">' + w.title + '</div>' +
         '</div>' +
       '</div>';
     }
 
-    // Create completely standalone overlay div
     var el = document.createElement('div');
     el.id = 'artistDetailPage';
-    el.style.cssText = 'position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:999990!important;background:#0a0a0a!important;overflow-y:auto!important;overflow-x:hidden!important;display:block!important;opacity:1!important;visibility:visible!important;color:#f0ece2!important';
+    // THE FIX: Hidden overflow and Flex column
+    el.style.cssText = 'position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:1000000!important;background:#0a0a0a!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;color:#f0ece2!important';
 
     el.innerHTML =
-      // TOP BAR
-      '<div style="position:sticky;top:0;z-index:10;padding:20px 40px;background:linear-gradient(#0a0a0a 60%,transparent);display:flex;justify-content:space-between;align-items:center">' +
-        '<button onclick="ArtistOverlay.close()" style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#f0ece2;background:rgba(10,10,10,0.9);border:1px solid rgba(240,236,226,0.15);padding:14px 24px;cursor:pointer">' +
-          '\u2190 Back' +
-        '</button>' +
-        '<button onclick="ArtistOverlay.close()" style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#f0ece2;background:rgba(10,10,10,0.9);border:1px solid rgba(240,236,226,0.15);padding:14px 24px;cursor:pointer">' +
-          '\u2715 Close' +
-        '</button>' +
+      // TOP BAR (Fixed)
+      '<div style="padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">' +
+        '<button onclick="ArtistOverlay.close()" style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#f0ece2;background:none;border:1px solid rgba(240,236,226,0.15);padding:10px 20px;cursor:pointer">\u2190 Back</button>' +
+        '<div style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:6px;color:#444440">' + num + ' / 07</div>' +
       '</div>' +
 
-      // HERO SECTION
-      '<div style="display:grid;grid-template-columns:1fr 1fr;min-height:100vh">' +
-        // Portrait
-        '<div style="position:relative;overflow:hidden;min-height:100vh;background:' + pal.portrait + '">' +
-          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">' +
-            '<span style="font-family:\'Playfair Display\',Georgia,serif;font-size:min(12vw,180px);font-weight:900;font-style:italic;color:rgba(240,236,226,0.06);letter-spacing:-0.04em;user-select:none">' + initials + '</span>' +
-          '</div>' +
-          '<div style="position:absolute;bottom:30px;left:30px">' +
-            '<span style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:7px;letter-spacing:4px;text-transform:uppercase;color:#444440">' + artist.born + '</span>' +
+      // MAIN BODY (The Split)
+      '<div style="display:grid;grid-template-columns:1fr 1.2fr;flex-grow:1;min-height:0">' +
+        
+        // Left: Portrait & Meta
+        '<div style="position:relative;background:' + pal.portrait + ';display:flex;flex-direction:column;justify-content:flex-end;padding:60px;border-right:1px solid rgba(240,236,226,0.05)">' +
+          '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:\'Playfair Display\',serif;font-size:15vw;font-weight:900;font-style:italic;color:rgba(240,236,226,0.04);user-select:none">' + initials + '</div>' +
+          '<div style="position:relative;z-index:2">' +
+            '<div style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c5a880;margin-bottom:10px">' + artist.discipline + '</div>' +
+            '<h1 style="font-family:\'Playfair Display\',serif;font-size:clamp(40px, 5vw, 75px);font-weight:900;font-style:italic;color:#f0ece2;line-height:1;margin:0 0 10px 0">' + artist.name + '</h1>' +
+            '<div style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:3px;color:#444440;text-transform:uppercase">' + artist.location + '</div>' +
           '</div>' +
         '</div>' +
-        // Info
-        '<div style="display:flex;flex-direction:column;justify-content:flex-end;padding:120px 80px 100px">' +
-          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:11px;letter-spacing:6px;color:#444440;margin-bottom:20px">' + num + ' / 07</div>' +
-          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c5a880;margin-bottom:24px">' + artist.discipline + '</div>' +
-          '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:min(5.5vw,85px);font-weight:900;font-style:italic;color:#f0ece2;line-height:1;margin-bottom:16px">' + artist.name + '</div>' +
-          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:10px;letter-spacing:3px;color:#444440;text-transform:uppercase;margin-bottom:50px">' + artist.location + '</div>' +
-          '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:min(1.6vw,20px);font-style:italic;line-height:1.8;color:rgba(240,236,226,0.45);max-width:420px;padding-left:20px;border-left:2px solid #c5a880">' + artist.quote + '</div>' +
+
+        // Right: Bio & Lists (This side is internally scrollable if needed)
+        '<div style="padding:60px 80px;overflow-y:auto;display:flex;flex-direction:column;gap:60px">' +
+          '<div>' +
+            '<div style="font-family:\'Space Mono\',monospace;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#c5a880;margin-bottom:20px">The Profile</div>' +
+            '<div style="font-family:\'Playfair Display\',serif;font-size:18px;font-style:italic;line-height:1.8;color:rgba(240,236,226,0.7)">' + artist.bio + '</div>' +
+          '</div>' +
+          
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">' +
+            '<div>' +
+              '<div style="font-family:\'Space Mono\',monospace;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#444440;margin-bottom:20px">Exhibitions</div>' +
+              exHTML +
+            '</div>' +
+            '<div>' +
+              '<div style="font-family:\'Space Mono\',monospace;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#444440;margin-bottom:20px">Works</div>' +
+              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' + wHTML + '</div>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
       '</div>' +
 
-      // DIVIDER
-      '<div style="width:100%;height:1px;background:rgba(240,236,226,0.08)"></div>' +
-
-      // BODY
-      '<div style="padding:100px 10vw;display:grid;grid-template-columns:1fr 1fr;gap:100px;max-width:1200px">' +
-        '<div>' +
-          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c5a880;margin-bottom:30px">Biography</div>' +
-          '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:min(1.3vw,17px);font-style:italic;line-height:2;color:rgba(240,236,226,0.6);margin-bottom:60px">' + artist.bio + '</div>' +
-          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#444440;margin-bottom:30px">Selected Exhibitions</div>' +
-          exHTML +
-        '</div>' +
-        '<div>' +
-          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c5a880;margin-bottom:30px">Selected Works</div>' +
-          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">' + wHTML + '</div>' +
-        '</div>' +
-      '</div>' +
-
-      // FOOTER NAV
-      '<div style="display:flex;justify-content:space-between;padding:60px 10vw 100px;border-top:1px solid rgba(240,236,226,0.08)">' +
-        '<button onclick="ArtistOverlay.open(' + prevId + ')" style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:10px;letter-spacing:2px;color:#888880;background:none;border:none;cursor:pointer">\u2190 ' + artists[prevId].name + '</button>' +
-        '<button onclick="ArtistOverlay.open(' + nextId + ')" style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:10px;letter-spacing:2px;color:#888880;background:none;border:none;cursor:pointer">' + artists[nextId].name + ' \u2192</button>' +
+      // FOOTER NAV (Fixed)
+      '<div style="padding:20px 40px;border-top:1px solid rgba(240,236,226,0.08);display:flex;justify-content:space-between;flex-shrink:0">' +
+        '<button onclick="ArtistOverlay.open(' + prevId + ')" style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer">\u2190 Previous</button>' +
+        '<button onclick="ArtistOverlay.open(' + nextId + ')" style="font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer">Next Artist \u2192</button>' +
       '</div>';
 
     document.body.appendChild(el);
     document.body.style.overflow = 'hidden';
-    try { if (typeof lenisInstance !== 'undefined' && lenisInstance) lenisInstance.stop(); } catch(e) {}
   }
-
+  
   function close() {
     var el = document.getElementById('artistDetailPage');
     if (el) el.remove();
