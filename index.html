@@ -2116,15 +2116,18 @@ img { display: block; max-width: 100%; }
   /* ── Horizontal Gallery → Vertical on mobile ── */
   .horizontal-section {
     overflow: visible !important;
+    height: auto !important;
+    position: relative !important;
   }
 
   .horizontal-track {
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
-    padding: 40px 20px 60px;
-    gap: 50px;
+    padding: 40px 20px 60px !important;
+    gap: 50px !important;
     transform: none !important;
+    position: relative !important;
   }
 
   .gallery-label {
@@ -2138,7 +2141,7 @@ img { display: block; max-width: 100%; }
   .gallery-piece {
     width: 100% !important;
     min-width: unset !important;
-    flex-shrink: 1;
+    flex-shrink: 1 !important;
   }
 
   .gallery-piece:nth-child(even) {
@@ -2147,6 +2150,22 @@ img { display: block; max-width: 100%; }
 
   .artwork-frame {
     aspect-ratio: 3/4;
+  }
+
+  /* ── TOUCH FIX: Make artwork overlay always subtly visible on mobile ── */
+  .artwork-overlay {
+    opacity: 1 !important;
+    background: linear-gradient(180deg, transparent 50%, rgba(10,10,10,0.6));
+    padding: 20px;
+  }
+
+  .artwork-overlay span {
+    font-size: 7px;
+    letter-spacing: 3px;
+  }
+
+  .artwork-overlay .artwork-number {
+    font-size: 32px;
   }
 
   .artwork-info {
@@ -2167,11 +2186,7 @@ img { display: block; max-width: 100%; }
     font-size: 8px;
   }
 
-  .artwork-overlay {
-    opacity: 0;
-  }
-
-  /* ── Card flip back adjustments ── */
+  /* ── Card flip back adjustments for touch ── */
   .artwork-back {
     padding: 20px;
   }
@@ -2189,6 +2204,15 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
+  }
+
+  .artwork-back-close {
+    padding: 10px 18px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 
   /* ── Split / Exhibition ── */
@@ -2217,7 +2241,7 @@ img { display: block; max-width: 100%; }
     margin-bottom: 30px;
   }
 
-  /* ── Artists Section ── */
+  /* ── Artists Section — TOUCH-FRIENDLY ── */
   .artists-section {
     padding: 80px 20px;
   }
@@ -2229,13 +2253,24 @@ img { display: block; max-width: 100%; }
 
   .artist-row {
     padding: 20px 0;
+    position: relative;
     flex-wrap: wrap;
     gap: 4px;
+    min-height: 44px;
+    /* Touch active state instead of hover */
+    -webkit-tap-highlight-color: rgba(197, 168, 128, 0.1);
   }
 
   .artist-row:hover {
-    padding-left: 12px;
+    padding-left: 0;
+    background: transparent;
   }
+
+  .artist-row:active {
+    background: rgba(240, 236, 226, 0.03);
+  }
+
+  .artist-row:active .artist-name { color: var(--accent); }
 
   .artist-index {
     font-size: 9px;
@@ -2245,22 +2280,21 @@ img { display: block; max-width: 100%; }
   .artist-name {
     font-size: clamp(18px, 5vw, 26px);
     margin: 0 8px;
-    flex-basis: calc(100% - 80px);
+    flex: 1;
   }
 
   .artist-discipline {
     font-size: 7px;
     letter-spacing: 2px;
+    width: 100%;
     margin-left: 32px;
-    flex-basis: 100%;
     margin-top: 2px;
   }
 
+  /* TOUCH FIX: Always show arrow on mobile */
   .artist-arrow {
-    opacity: 0.4;
-    transform: none;
-    position: absolute;
-    right: 0;
+    opacity: 0.5 !important;
+    transform: none !important;
   }
 
   /* ── Footer ── */
@@ -2303,6 +2337,12 @@ img { display: block; max-width: 100%; }
   .about-stat-grid { grid-template-columns: 1fr; }
   .artist-works-grid { grid-template-columns: 1fr; }
 
+  /* ── Works grid items — TOUCH: always show overlay ── */
+  .works-grid-item .overlay {
+    opacity: 1 !important;
+    background: rgba(10, 10, 10, 0.5);
+  }
+
   /* ── Exhibition hero ── */
   .exhibition-hero {
     height: 60vh;
@@ -2328,16 +2368,46 @@ img { display: block; max-width: 100%; }
     padding: 0 20px;
   }
 
-  /* ── CTA buttons ── */
+  /* ── CTA buttons — TOUCH-FRIENDLY (44px min tap target) ── */
   .cta-line {
     font-size: 8px;
     letter-spacing: 3px;
+    min-height: 44px;
+    -webkit-tap-highlight-color: rgba(197, 168, 128, 0.15);
+  }
+
+  .cta-line:active {
+    color: var(--accent);
+    border-color: var(--accent);
   }
 
   .cta-box {
     font-size: 8px;
     letter-spacing: 3px;
     padding: 16px 28px;
+    min-height: 44px;
+    -webkit-tap-highlight-color: rgba(197, 168, 128, 0.15);
+  }
+
+  .cta-box:active {
+    color: var(--ink);
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  /* ── Nav links — touch active states ── */
+  .nav-corner a:active { color: var(--accent); }
+
+  /* ── Footer links — touch-friendly ── */
+  .footer-links a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .footer-links a:active {
+    opacity: 1;
+    color: var(--accent);
   }
 
   /* ── Preloader ── */
@@ -2349,6 +2419,14 @@ img { display: block; max-width: 100%; }
 
   .preloader-counter {
     font-size: clamp(60px, 18vw, 160px);
+  }
+
+  /* ── Contact form — touch-friendly ── */
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    min-height: 44px;
   }
 }
 
@@ -3170,15 +3248,38 @@ const ArtworkEngine = {
     let isHovering = false;
 
     if (interactive !== false) {
-      parent.addEventListener('mousemove', (e) => {
-        const r = parent.getBoundingClientRect();
-        uniforms.uMouse.value.set(
-          (e.clientX - r.left) / r.width,
-          1.0 - (e.clientY - r.top) / r.height
-        );
-      });
-      parent.addEventListener('mouseenter', () => { isHovering = true; });
-      parent.addEventListener('mouseleave', () => { isHovering = false; });
+      if (isMobile) {
+        // Touch events for mobile
+        parent.addEventListener('touchstart', (e) => {
+          isHovering = true;
+          const touch = e.touches[0];
+          const r = parent.getBoundingClientRect();
+          uniforms.uMouse.value.set(
+            (touch.clientX - r.left) / r.width,
+            1.0 - (touch.clientY - r.top) / r.height
+          );
+        }, { passive: true });
+        parent.addEventListener('touchmove', (e) => {
+          const touch = e.touches[0];
+          const r = parent.getBoundingClientRect();
+          uniforms.uMouse.value.set(
+            (touch.clientX - r.left) / r.width,
+            1.0 - (touch.clientY - r.top) / r.height
+          );
+        }, { passive: true });
+        parent.addEventListener('touchend', () => { isHovering = false; }, { passive: true });
+      } else {
+        // Mouse events for desktop
+        parent.addEventListener('mousemove', (e) => {
+          const r = parent.getBoundingClientRect();
+          uniforms.uMouse.value.set(
+            (e.clientX - r.left) / r.width,
+            1.0 - (e.clientY - r.top) / r.height
+          );
+        });
+        parent.addEventListener('mouseenter', () => { isHovering = true; });
+        parent.addEventListener('mouseleave', () => { isHovering = false; });
+      }
     }
 
     const artwork = { renderer, scene, camera, uniforms, isHovering: () => isHovering, rect };
@@ -3523,17 +3624,28 @@ function open(id) {
     for (var j = 0; j < artist.works.length; j++) {
       var w = artist.works[j];
       var bg = pal.works[j % pal.works.length];
-      wHTML += '<div style="aspect-ratio:1;position:relative;overflow:hidden;background:' + bg + '">' +
-        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;background:linear-gradient(transparent 40%,rgba(10,10,10,0.8));opacity:0;transition:opacity 0.3s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">' +
-          '<div style="font-family:\'Playfair Display\',serif;font-size:12px;font-style:italic;color:#f0ece2">' + w.title + '</div>' +
-        '</div>' +
-      '</div>';
+      if (isMobile) {
+        // Always show title overlay on mobile — no hover needed
+        wHTML += '<div style="aspect-ratio:1;position:relative;overflow:hidden;background:' + bg + '">' +
+          '<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;background:linear-gradient(transparent 40%,rgba(10,10,10,0.7))">' +
+            '<div style="font-family:\'Playfair Display\',serif;font-size:11px;font-style:italic;color:#f0ece2">' + w.title + '</div>' +
+            '<div style="font-family:\'Space Mono\',monospace;font-size:7px;letter-spacing:1px;color:#888880;margin-top:3px">' + w.year + '</div>' +
+          '</div>' +
+        '</div>';
+      } else {
+        wHTML += '<div style="aspect-ratio:1;position:relative;overflow:hidden;background:' + bg + '">' +
+          '<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;background:linear-gradient(transparent 40%,rgba(10,10,10,0.8));opacity:0;transition:opacity 0.3s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">' +
+            '<div style="font-family:\'Playfair Display\',serif;font-size:12px;font-style:italic;color:#f0ece2">' + w.title + '</div>' +
+          '</div>' +
+        '</div>';
+      }
     }
 
     var el = document.createElement('div');
     el.id = 'artistDetailPage';
-    // THE FIX: Hidden overflow and Flex column
-    el.style.cssText = 'position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:1000000!important;background:#0a0a0a!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;color:#f0ece2!important';
+    // On mobile: overflow-y auto to allow scrolling the stacked layout
+    // On desktop: overflow hidden, the right panel scrolls independently
+    el.style.cssText = 'position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:1000000!important;background:#0a0a0a!important;overflow:' + (isMobile ? 'hidden' : 'hidden') + '!important;display:flex!important;flex-direction:column!important;color:#f0ece2!important';
 
     var mob = isMobile;
     var padTop = mob ? '12px 16px' : '20px 40px';
@@ -3543,7 +3655,8 @@ function open(id) {
     var bioGridCols = mob ? '1fr' : '1fr 1fr';
     var fontSize9 = mob ? '8px' : '9px';
     var letterSp = mob ? '2px' : '3px';
-    var btnPad = mob ? '8px 14px' : '10px 20px';
+    var btnPad = mob ? '10px 16px' : '10px 20px';
+    var btnMinH = mob ? 'min-height:44px;display:flex;align-items:center;' : '';
     var bioFontSize = mob ? '15px' : '18px';
     var gapSize = mob ? '36px' : '60px';
     var initialsSize = mob ? '25vw' : '15vw';
@@ -3551,7 +3664,7 @@ function open(id) {
     el.innerHTML =
       // TOP BAR (Fixed)
       '<div style="padding:' + padTop + ';display:flex;justify-content:space-between;align-items:center;flex-shrink:0">' +
-        '<button onclick="ArtistOverlay.close()" style="font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:' + letterSp + ';text-transform:uppercase;color:#f0ece2;background:none;border:1px solid rgba(240,236,226,0.15);padding:' + btnPad + ';cursor:pointer">\u2190 Back</button>' +
+        '<button onclick="ArtistOverlay.close()" style="' + btnMinH + 'font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:' + letterSp + ';text-transform:uppercase;color:#f0ece2;background:none;border:1px solid rgba(240,236,226,0.15);padding:' + btnPad + ';cursor:pointer;-webkit-tap-highlight-color:rgba(197,168,128,0.15)">\u2190 Back</button>' +
         '<div style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:6px;color:#444440">' + num + ' / 07</div>' +
       '</div>' +
 
@@ -3590,8 +3703,8 @@ function open(id) {
 
       // FOOTER NAV (Fixed)
       '<div style="padding:' + (mob ? '14px 16px' : '20px 40px') + ';border-top:1px solid rgba(240,236,226,0.08);display:flex;justify-content:space-between;flex-shrink:0">' +
-        '<button onclick="ArtistOverlay.open(' + prevId + ')" style="font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer">\u2190 Previous</button>' +
-        '<button onclick="ArtistOverlay.open(' + nextId + ')" style="font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer">Next Artist \u2192</button>' +
+        '<button onclick="ArtistOverlay.open(' + prevId + ')" style="' + btnMinH + 'font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer;padding:8px 4px;-webkit-tap-highlight-color:rgba(197,168,128,0.15)">\u2190 Previous</button>' +
+        '<button onclick="ArtistOverlay.open(' + nextId + ')" style="' + btnMinH + 'font-family:\'Space Mono\',monospace;font-size:' + fontSize9 + ';letter-spacing:2px;color:#444440;background:none;border:none;cursor:pointer;padding:8px 4px;-webkit-tap-highlight-color:rgba(197,168,128,0.15)">Next Artist \u2192</button>' +
       '</div>';
 
     document.body.appendChild(el);
@@ -3642,6 +3755,27 @@ function initSite() {
 // Boot
 document.addEventListener('DOMContentLoaded', function() {
   Cursor.init();
+
+  // Mobile touch adjustments
+  if (isMobile) {
+    // Change "Examine →" to "Tap to view" on artwork overlays
+    document.querySelectorAll('.artwork-overlay span:not(.artwork-number)').forEach(function(span) {
+      span.textContent = 'Tap to view';
+    });
+
+    // Ensure GSAP doesn't pin horizontal section on mobile
+    // (safety measure in case ScrollTrigger applies residual styles)
+    var hSection = document.querySelector('.horizontal-section');
+    if (hSection) {
+      hSection.style.position = 'relative';
+      hSection.style.height = 'auto';
+    }
+    var hTrack = document.getElementById('horizontalTrack');
+    if (hTrack) {
+      hTrack.style.transform = 'none';
+    }
+  }
+
   var hasPreloader = document.getElementById('preloader');
   if (hasPreloader) {
     Preloader.run(function() {
