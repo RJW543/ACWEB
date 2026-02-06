@@ -129,6 +129,8 @@ img { display: block; max-width: 100%; }
    CUSTOM CURSOR
    ═══════════════════════════════════ */
 
+/* Update these 3 blocks in your CSS */
+
 .cursor-outer {
   position: fixed;
   width: 48px;
@@ -136,7 +138,7 @@ img { display: block; max-width: 100%; }
   border: 1px solid rgba(240, 236, 226, 0.4);
   border-radius: 50%;
   pointer-events: none;
-  z-index: 100000;
+  z-index: 1000001; /* CHANGED: Was 300000 */
   transform: translate(-50%, -50%);
   transition: width 0.5s var(--ease-out-expo),
               height 0.5s var(--ease-out-expo),
@@ -153,7 +155,7 @@ img { display: block; max-width: 100%; }
   background: var(--bone);
   border-radius: 50%;
   pointer-events: none;
-  z-index: 100001;
+  z-index: 1000002; /* CHANGED: Was 300001 */
   transform: translate(-50%, -50%);
   transition: width 0.2s, height 0.2s, opacity 0.2s;
 }
@@ -161,7 +163,7 @@ img { display: block; max-width: 100%; }
 .cursor-label {
   position: fixed;
   pointer-events: none;
-  z-index: 100002;
+  z-index: 1000003; /* CHANGED: Was 300002 */
   transform: translate(-50%, -50%);
   font-family: var(--mono);
   font-size: 8px;
@@ -599,8 +601,8 @@ img { display: block; max-width: 100%; }
   position: relative;
   width: 100%;
   aspect-ratio: 4/5;
-  overflow: hidden;
   background: rgba(240, 236, 226, 0.02);
+  perspective: 1200px;
 }
 
 .artwork-canvas {
@@ -687,6 +689,133 @@ img { display: block; max-width: 100%; }
   letter-spacing: 2px;
   color: var(--accent);
   margin-top: 4px;
+}
+
+/* ── CARD FLIP ── */
+
+/* ── CARD FLIP ── */
+
+.artwork-card {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s var(--ease-in-out);
+}
+
+.artwork-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.artwork-front,
+.artwork-back {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.artwork-front {
+  z-index: 2;
+  overflow: hidden;
+}
+
+.artwork-back {
+  transform: rotateY(180deg);
+  background: var(--ink);
+  border: 1px solid var(--border-med);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10%;
+  overflow-y: auto;
+}
+
+.artwork-back-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.artwork-back-title {
+  font-family: var(--serif);
+  font-size: clamp(18px, 2vw, 28px);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--bone);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.artwork-back-artist {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.artwork-back-desc {
+  font-family: var(--serif);
+  font-size: clamp(12px, 1.2vw, 15px);
+  font-style: italic;
+  line-height: 1.9;
+  color: rgba(240, 236, 226, 0.55);
+  margin-bottom: 24px;
+}
+
+.artwork-back-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.artwork-back-detail-label {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  margin-bottom: 4px;
+}
+
+.artwork-back-detail-value {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--bone);
+}
+
+.artwork-back-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--grey);
+  background: none;
+  border: 1px solid var(--border-med);
+  padding: 8px 14px;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.artwork-back-close:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ═══════════════════════════════════
@@ -1363,6 +1492,312 @@ img { display: block; max-width: 100%; }
   height: 100%;
   display: block;
 }
+/* ═══════════════════════════════════
+   ARTIST DETAIL OVERLAY
+   ═══════════════════════════════════ */
+
+.artist-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200000;
+  background: var(--ink);
+  overflow-y: auto;
+  display: none;
+}
+
+.artist-overlay.active {
+  display: block;
+}
+
+.artist-overlay-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200001;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  background: linear-gradient(var(--ink) 30%, transparent);
+  pointer-events: none;
+}
+
+.artist-overlay-topbar > * {
+  pointer-events: all;
+}
+
+.artist-overlay-btn {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bone);
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-med);
+  padding: 14px 24px;
+  cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.artist-overlay-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.artist-overlay-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.artist-overlay-portrait {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(197,168,128,0.12) 0%, rgba(10,10,10,1) 40%, rgba(197,168,128,0.06) 100%);
+}
+
+.artist-overlay-portrait canvas,
+.artist-overlay-work canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.artist-portrait-initials {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.artist-portrait-initials span {
+  font-family: var(--serif);
+  font-size: clamp(100px, 16vw, 240px);
+  font-weight: 900;
+  font-style: italic;
+  color: rgba(240, 236, 226, 0.06);
+  letter-spacing: -0.04em;
+  user-select: none;
+}
+
+.artist-portrait-label {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  z-index: 2;
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+}
+
+.artist-overlay-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 120px 80px 100px;
+}
+
+.artist-overlay-index {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 6px;
+  color: var(--grey-dark);
+  margin-bottom: 20px;
+}
+
+.artist-overlay-discipline {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+.artist-overlay-name {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5.5vw, 85px);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--bone);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.artist-overlay-location {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--grey-dark);
+  text-transform: uppercase;
+  margin-bottom: 50px;
+}
+
+.artist-overlay-quote {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.6vw, 20px);
+  font-style: italic;
+  line-height: 1.8;
+  color: rgba(240, 236, 226, 0.45);
+  max-width: 420px;
+  padding-left: 20px;
+  border-left: 2px solid var(--accent);
+}
+
+.artist-overlay-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+.artist-overlay-body {
+  padding: 100px 10vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.artist-overlay-bio-label,
+.artist-overlay-exhibitions-title,
+.artist-overlay-works-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 30px;
+}
+
+.artist-overlay-exhibitions-title {
+  color: var(--grey-dark);
+}
+
+.artist-overlay-bio {
+  font-family: var(--serif);
+  font-size: clamp(14px, 1.3vw, 17px);
+  font-style: italic;
+  line-height: 2;
+  color: rgba(240, 236, 226, 0.6);
+  margin-bottom: 60px;
+}
+
+.artist-overlay-exhibition-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.artist-overlay-exhibition-item:first-of-type {
+  border-top: 1px solid var(--border);
+}
+
+.artist-overlay-exhibition-name {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--bone);
+}
+
+.artist-overlay-exhibition-venue {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--grey-dark);
+  text-transform: uppercase;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.artist-overlay-works-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.artist-overlay-work {
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(197,168,128,0.08) 0%, rgba(10,10,10,1) 50%, rgba(197,168,128,0.04) 100%);
+}
+
+.artist-overlay-work-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background: linear-gradient(transparent, rgba(10,10,10,0.85));
+}
+
+.artist-overlay-work-title {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--bone);
+}
+
+.artist-overlay-work-year {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--grey);
+  margin-top: 4px;
+}
+
+.artist-overlay-footer {
+  padding: 60px 10vw;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.artist-overlay-footer-btn {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--grey);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.artist-overlay-footer-btn:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 1024px) {
+  .artist-overlay-hero { grid-template-columns: 1fr; }
+  .artist-overlay-portrait { min-height: 60vh; }
+  .artist-overlay-intro { padding: 60px 40px 80px; }
+  .artist-overlay-body { grid-template-columns: 1fr; gap: 60px; padding: 60px 8vw; }
+  .artist-overlay-topbar { padding: 16px 20px; }
+}
 
 /* ═══════════════════════════════════
    FOOTER
@@ -1603,58 +2038,92 @@ img { display: block; max-width: 100%; }
   <div class="horizontal-track" id="horizontalTrack">
 
     <div class="gallery-piece" data-cursor="View">
-      <a href="#works" style="text-decoration:none;color:inherit">
-        <div class="artwork-frame">
-          <img src="Mask.png" alt="Spirit and Teeth" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-          <div class="artwork-overlay">
-            <span>Examine →</span>
-            <span class="artwork-number">I</span>
+        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
+          <div class="artwork-card">
+            <div class="artwork-front">
+              <img src="Mask.png" alt="Untitled (Erosion IV)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">I</span></div>
+            </div>
+            <div class="artwork-back">
+              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
+              <span class="artwork-back-label">About this work</span>
+              <div class="artwork-back-title">Untitled (Erosion IV)</div>
+              <div class="artwork-back-artist">Juan-Miguel Guimarães</div>
+              <div class="artwork-back-desc">A visceral meditation on ancestral memory and bodily inheritance. Guimarães layers organic pigments with found textile fragments — linen sourced from his grandmother's workshop in Porto — creating surfaces that appear to breathe, decay, and regenerate simultaneously. The mask motif recurs throughout his practice as a threshold between the visible self and the inherited other.</div>
+              <div class="artwork-back-details">
+                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Mixed media on linen</div></div>
+                <div><div class="artwork-back-detail-label">Size</div><div class="artwork-back-detail-value">180 × 240 cm</div></div>
+                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2024</div></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="artwork-info">
           <div>
-            <div class="artwork-title">Spirit and Teeth</div>
+            <div class="artwork-title">Untitled (Erosion IV)</div>
             <div class="artwork-artist">Juan-Miguel Guimarães</div>
-            <div class="artwork-medium">Mixed media on bolsa, 180 × 240 cm</div>
+            <div class="artwork-medium">Mixed media on linen, 180 × 240 cm</div>
           </div>
           <div style="text-align:right">
             <div class="artwork-year">2024</div>
             <div class="artwork-price">Price on request</div>
           </div>
         </div>
-      </a>
     </div>
 
     <div class="gallery-piece" data-cursor="View">
-      <a href="#works" style="text-decoration:none;color:inherit">
-        <div class="artwork-frame">
-          <img src="cell.jpg" alt="Membrane Study No. 7" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-          <div class="artwork-overlay">
-            <span>Examine →</span>
-            <span class="artwork-number">II</span>
+        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
+          <div class="artwork-card">
+            <div class="artwork-front">
+              <img src="cell.jpg" alt="Membrane Study No. 7" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">II</span></div>
+            </div>
+            <div class="artwork-back">
+              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
+              <span class="artwork-back-label">About this work</span>
+              <div class="artwork-back-title">Membrane Study No. 7</div>
+              <div class="artwork-back-artist">N.E. Rogers</div>
+              <div class="artwork-back-desc">Rogers' ongoing Membrane series investigates the liminal spaces between cellular biology and architectural form. Working with oil on raw aluminium, each piece captures the moment a boundary becomes permeable — when inside and outside lose their meaning. The reflective substrate creates a shifting dialogue between pigment and viewer, ensuring no two encounters with the work are identical.</div>
+              <div class="artwork-back-details">
+                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Oil on aluminium</div></div>
+                <div><div class="artwork-back-detail-label">Size</div><div class="artwork-back-detail-value">120 × 160 cm</div></div>
+                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2025</div></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="artwork-info">
           <div>
             <div class="artwork-title">Membrane Study No. 7</div>
             <div class="artwork-artist">N.E. Rogers</div>
-            <div class="artwork-medium">Mixed media, 120 × 160 cm</div>
+            <div class="artwork-medium">Oil on aluminium, 120 × 160 cm</div>
           </div>
           <div style="text-align:right">
             <div class="artwork-year">2025</div>
             <div class="artwork-price">£42,000</div>
           </div>
         </div>
-      </a>
     </div>
 
     <div class="gallery-piece" data-cursor="View">
-      <a href="#works" style="text-decoration:none;color:inherit">
-        <div class="artwork-frame">
-          <canvas class="artwork-canvas" data-index="2"></canvas>
-          <div class="artwork-overlay">
-            <span>Examine →</span>
-            <span class="artwork-number">III</span>
+        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
+          <div class="artwork-card">
+            <div class="artwork-front">
+              <canvas class="artwork-canvas" data-index="2"></canvas>
+              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">III</span></div>
+            </div>
+            <div class="artwork-back">
+              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
+              <span class="artwork-back-label">About this work</span>
+              <div class="artwork-back-title">The Weight of Looking</div>
+              <div class="artwork-back-artist">Elijah Craigl</div>
+              <div class="artwork-back-desc">Craigl's photographic practice dismantles the authority of the gaze. Shot on large-format film in abandoned institutional spaces across the American Midwest, each image is then subjected to chemical interference — bleaching, re-exposing, layering — until the photograph forgets what it was meant to document. What remains is the residue of attention itself.</div>
+              <div class="artwork-back-details">
+                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Archival pigment print</div></div>
+                <div><div class="artwork-back-detail-label">Size</div><div class="artwork-back-detail-value">90 × 120 cm</div></div>
+                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2024</div></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="artwork-info">
@@ -1668,16 +2137,27 @@ img { display: block; max-width: 100%; }
             <div class="artwork-price">£28,500</div>
           </div>
         </div>
-      </a>
     </div>
 
     <div class="gallery-piece" data-cursor="View">
-      <a href="#works" style="text-decoration:none;color:inherit">
-        <div class="artwork-frame">
-          <canvas class="artwork-canvas" data-index="3"></canvas>
-          <div class="artwork-overlay">
-            <span>Examine →</span>
-            <span class="artwork-number">IV</span>
+        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
+          <div class="artwork-card">
+            <div class="artwork-front">
+              <canvas class="artwork-canvas" data-index="3"></canvas>
+              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">IV</span></div>
+            </div>
+            <div class="artwork-back">
+              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
+              <span class="artwork-back-label">About this work</span>
+              <div class="artwork-back-title">Negative Space (Portrait)</div>
+              <div class="artwork-back-artist">Sable Okonkwo</div>
+              <div class="artwork-back-desc">Okonkwo's generative code works exist at the intersection of portraiture and erasure. Custom algorithms trained on archival photographs from the Nigerian National Museum produce forms that hover between recognition and abstraction — faces that are simultaneously everyone and no one. Each display renders a unique iteration; the portrait is never the same twice.</div>
+              <div class="artwork-back-details">
+                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Generative code</div></div>
+                <div><div class="artwork-back-detail-label">Display</div><div class="artwork-back-detail-value">Custom hardware</div></div>
+                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2025</div></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="artwork-info">
@@ -1691,16 +2171,27 @@ img { display: block; max-width: 100%; }
             <div class="artwork-price">Sold</div>
           </div>
         </div>
-      </a>
     </div>
 
     <div class="gallery-piece" data-cursor="View">
-      <a href="#works" style="text-decoration:none;color:inherit">
-        <div class="artwork-frame">
-          <canvas class="artwork-canvas" data-index="4"></canvas>
-          <div class="artwork-overlay">
-            <span>Examine →</span>
-            <span class="artwork-number">V</span>
+        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
+          <div class="artwork-card">
+            <div class="artwork-front">
+              <canvas class="artwork-canvas" data-index="4"></canvas>
+              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">V</span></div>
+            </div>
+            <div class="artwork-back">
+              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
+              <span class="artwork-back-label">About this work</span>
+              <div class="artwork-back-title">Dissolve (Triptych I)</div>
+              <div class="artwork-back-artist">Ines Okoro</div>
+              <div class="artwork-back-desc">The first panel of Okoro's monumental triptych explores chromatic dissolution as a metaphor for memory loss. Working exclusively with hand-ground pigments on paper she fabricates herself from cotton and abacá fibres, Okoro builds up hundreds of translucent washes until form emerges from — and retreats back into — pure colour. The paper itself becomes the subject.</div>
+              <div class="artwork-back-details">
+                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">Pigment on handmade paper</div></div>
+                <div><div class="artwork-back-detail-label">Size</div><div class="artwork-back-detail-value">200 × 150 cm</div></div>
+                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2024</div></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="artwork-info">
@@ -1714,16 +2205,27 @@ img { display: block; max-width: 100%; }
             <div class="artwork-price">£65,000</div>
           </div>
         </div>
-      </a>
     </div>
 
     <div class="gallery-piece" data-cursor="View">
-      <a href="#works" style="text-decoration:none;color:inherit">
-        <div class="artwork-frame">
-          <canvas class="artwork-canvas" data-index="5"></canvas>
-          <div class="artwork-overlay">
-            <span>Examine →</span>
-            <span class="artwork-number">VI</span>
+        <div class="artwork-frame" onclick="this.querySelector('.artwork-card').classList.toggle('flipped')">
+          <div class="artwork-card">
+            <div class="artwork-front">
+              <canvas class="artwork-canvas" data-index="5"></canvas>
+              <div class="artwork-overlay"><span>Examine →</span><span class="artwork-number">VI</span></div>
+            </div>
+            <div class="artwork-back">
+              <button class="artwork-back-close" onclick="event.stopPropagation();this.closest('.artwork-card').classList.remove('flipped')">✕ Close</button>
+              <span class="artwork-back-label">About this work</span>
+              <div class="artwork-back-title">Threshold Condition</div>
+              <div class="artwork-back-artist">Felix Brandt</div>
+              <div class="artwork-back-desc">Brandt's durational video work captures the precise moment of transition — doors closing, tides turning, light shifting from day to night. Shot across twelve cities over eighteen months, the piece is presented as an infinite loop where endings perpetually become beginnings. The soundtrack, composed from field recordings at each location, collapses geography into a single continuous present.</div>
+              <div class="artwork-back-details">
+                <div><div class="artwork-back-detail-label">Medium</div><div class="artwork-back-detail-value">4K video loop</div></div>
+                <div><div class="artwork-back-detail-label">Duration</div><div class="artwork-back-detail-value">12:47</div></div>
+                <div><div class="artwork-back-detail-label">Year</div><div class="artwork-back-detail-value">2025</div></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="artwork-info">
@@ -1737,7 +2239,6 @@ img { display: block; max-width: 100%; }
             <div class="artwork-price">Price on request</div>
           </div>
         </div>
-      </a>
     </div>
 
   </div>
@@ -1758,7 +2259,8 @@ img { display: block; max-width: 100%; }
     </h2>
     <p class="exhibition-body reveal">
       A group exhibition exploring the spaces we cannot name — the doorways 
-      between perception and understanding, presence and memory.
+      between perception and understanding, presence and memory. Seven artists 
+      dismantle the architecture of seeing.
     </p>
     <div class="exhibition-dates reveal">
       06 Feb — 14 Apr 2026<br>
@@ -1793,28 +2295,46 @@ img { display: block; max-width: 100%; }
     Represented<br><span class="outline">Artists</span>
   </h2>
 
-  <a href="#artists" class="artist-row" data-cursor="Explore">
+  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="0" onclick="ArtistOverlay.open(0)">
     <span class="artist-index">01</span>
     <span class="artist-name">Juan-Miguel Guimarães</span>
     <span class="artist-discipline">Mixed Media / Sculpture</span>
     <span class="artist-arrow">→</span>
   </a>
-  <a href="#artists" class="artist-row" data-cursor="Explore">
+  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="1" onclick="ArtistOverlay.open(1)">
     <span class="artist-index">02</span>
     <span class="artist-name">N.E. Rogers</span>
     <span class="artist-discipline">Oil / Aluminium</span>
     <span class="artist-arrow">→</span>
   </a>
-  <a href="#artists" class="artist-row" data-cursor="Explore">
+  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="2" onclick="ArtistOverlay.open(2)">
     <span class="artist-index">03</span>
     <span class="artist-name">Elijah Craigl</span>
     <span class="artist-discipline">Photography / Installation</span>
     <span class="artist-arrow">→</span>
   </a>
-  <a href="#artists" class="artist-row" data-cursor="Explore">
+  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="3" onclick="ArtistOverlay.open(3)">
     <span class="artist-index">04</span>
-    <span class="artist-name">BigNig420</span>
+    <span class="artist-name">Sable Okonkwo</span>
     <span class="artist-discipline">Digital / Generative</span>
+    <span class="artist-arrow">→</span>
+  </a>
+  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="4" onclick="ArtistOverlay.open(4)">
+    <span class="artist-index">05</span>
+    <span class="artist-name">Ines Okoro</span>
+    <span class="artist-discipline">Pigment on Paper</span>
+    <span class="artist-arrow">→</span>
+  </a>
+  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="5" onclick="ArtistOverlay.open(5)">
+    <span class="artist-index">06</span>
+    <span class="artist-name">Felix Brandt</span>
+    <span class="artist-discipline">Video / Performance</span>
+    <span class="artist-arrow">→</span>
+  </a>
+  <a href="javascript:void(0)" class="artist-row" data-cursor="Explore" data-artist-id="6" onclick="ArtistOverlay.open(6)">
+    <span class="artist-index">07</span>
+    <span class="artist-name">Yuki Nakamura</span>
+    <span class="artist-discipline">Ceramic / Sound</span>
     <span class="artist-arrow">→</span>
   </a>
 
@@ -1827,6 +2347,15 @@ img { display: block; max-width: 100%; }
     </a>
   </div>
 </section>
+
+<!-- ═══════════════ ARTIST DETAIL OVERLAY ═══════════════ -->
+<div class="artist-overlay" id="artistOverlay">
+  <div class="artist-overlay-topbar">
+    <button class="artist-overlay-btn" onclick="ArtistOverlay.close()">← Back</button>
+    <button class="artist-overlay-btn" onclick="ArtistOverlay.close()">✕ Close</button>
+  </div>
+  <div id="artistOverlayContent"></div>
+</div>
 
 <!-- ═══════════════ FOOTER ═══════════════ -->
 <footer class="footer" id="contact">
@@ -1855,7 +2384,7 @@ img { display: block; max-width: 100%; }
     <div>
       <div class="footer-col-title">Inquiries</div>
       <ul class="footer-links">
-        <li><a href="/cdn-cgi/l/email-protection#e087818c8c859299a0818883ce819294"><span class="__cf_email__" data-cfemail="6304020f0f06111a23020b004d021117">[email&#160;protected]</span></a></li>
+        <li><a href="/cdn-cgi/l/email-protection#0364626f6f66717a43626b602d627177"><span class="__cf_email__" data-cfemail="d8bfb9b4b4bdaaa198b9b0bbf6b9aaac">[email&#160;protected]</span></a></li>
         <li><a href="tel:+442079460123">+44 20 7946 0123</a></li>
       </ul>
     </div>
@@ -2010,28 +2539,38 @@ const Preloader = {
 
 
 // ────────────────────────────────
-//  PAGE TRANSITIONS
+//  PAGE TRANSITIONS (FIXED)
 // ────────────────────────────────
 
 const PageTransition = {
   overlay: null,
 
   init() {
-    // Create transition overlay
-    this.overlay = document.createElement('div');
-    this.overlay.className = 'page-transition';
-    for (let i = 0; i < 5; i++) {
-      const col = document.createElement('div');
-      col.className = 'col';
-      this.overlay.appendChild(col);
+    // 1. Create transition overlay if it doesn't exist
+    if (!this.overlay) {
+      this.overlay = document.createElement('div');
+      this.overlay.className = 'page-transition';
+      for (let i = 0; i < 5; i++) {
+        const col = document.createElement('div');
+        col.className = 'col';
+        this.overlay.appendChild(col);
+      }
+      document.body.appendChild(this.overlay);
     }
-    document.body.appendChild(this.overlay);
 
-    // Intercept internal links
+    // 2. Intercept internal links
     document.querySelectorAll('a[href]').forEach(link => {
       const href = link.getAttribute('href');
-      if (!href) return;
-      if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('http')) return;
+      
+      // Ignore empty links, anchors, or external sites
+      if (!href || href === '#' || href.startsWith('#') || href.startsWith('mailto:') || href.indexOf('http') === 0) {
+        return;
+      }
+
+      // IGNORE ARTIST ROWS: This prevents the black screen when clicking artists
+      if (link.classList.contains('artist-row') || link.closest('.artist-row')) {
+        return;
+      }
 
       link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -2039,7 +2578,7 @@ const PageTransition = {
       });
     });
 
-    // Run leave animation on load
+    // 3. Run "leave" animation on load (the wipe-out effect)
     this.overlay.classList.add('leaving');
     setTimeout(() => {
       this.overlay.classList.remove('leaving');
@@ -2047,6 +2586,8 @@ const PageTransition = {
   },
 
   navigate(url) {
+    if (!url || url === '#') return;
+    
     this.overlay.classList.add('entering');
     setTimeout(() => {
       window.location.href = url;
@@ -2416,6 +2957,341 @@ function initAnchorLinks() {
   });
 }
 
+// ────────────────────────────────
+//  ARTIST DETAIL OVERLAY
+// ────────────────────────────────
+
+var ArtistOverlay = (function() {
+
+  // CSS gradient palettes for each artist (portrait + works)
+  var palettes = [
+    { // Guimarães - warm terracotta/gold
+      portrait: 'radial-gradient(ellipse at 30% 70%, rgba(197,168,128,0.25) 0%, transparent 50%), radial-gradient(ellipse at 70% 30%, rgba(139,90,43,0.2) 0%, transparent 45%), radial-gradient(ellipse at 50% 50%, rgba(87,62,45,0.15) 0%, transparent 70%), linear-gradient(160deg, #0e0c0a 0%, #1a1410 40%, #0e0c0a 100%)',
+      works: [
+        'linear-gradient(135deg, rgba(197,168,128,0.2), #0a0a0a 60%, rgba(139,90,43,0.1))',
+        'radial-gradient(circle at 20% 80%, rgba(197,168,128,0.15), transparent 50%), linear-gradient(45deg, #0e0c0a, #1a1410)',
+        'linear-gradient(200deg, rgba(139,90,43,0.2), #0a0a0a 50%, rgba(197,168,128,0.08))',
+        'radial-gradient(circle at 80% 20%, rgba(87,62,45,0.25), transparent 50%), linear-gradient(0deg, #0a0a0a, #12100e)',
+      ]
+    },
+    { // Rogers - cool blue/silver
+      portrait: 'radial-gradient(ellipse at 40% 60%, rgba(120,140,180,0.2) 0%, transparent 50%), radial-gradient(ellipse at 60% 40%, rgba(80,100,140,0.15) 0%, transparent 45%), linear-gradient(160deg, #0a0c0e 0%, #10141a 40%, #0a0c0e 100%)',
+      works: [
+        'linear-gradient(135deg, rgba(120,140,180,0.15), #0a0a0a 60%, rgba(80,100,140,0.1))',
+        'radial-gradient(circle at 30% 70%, rgba(120,140,180,0.12), transparent 50%), linear-gradient(45deg, #0a0c0e, #10141a)',
+        'linear-gradient(200deg, rgba(80,100,140,0.18), #0a0a0a 50%, rgba(120,140,180,0.06))',
+        'radial-gradient(circle at 70% 30%, rgba(100,120,160,0.2), transparent 50%), linear-gradient(0deg, #0a0a0a, #0e1014)',
+      ]
+    },
+    { // Craigl - desaturated amber
+      portrait: 'radial-gradient(ellipse at 35% 65%, rgba(180,160,120,0.18) 0%, transparent 50%), radial-gradient(ellipse at 65% 35%, rgba(160,140,100,0.12) 0%, transparent 45%), linear-gradient(160deg, #0c0b0a 0%, #18150e 40%, #0c0b0a 100%)',
+      works: [
+        'linear-gradient(135deg, rgba(180,160,120,0.14), #0a0a0a 60%, rgba(160,140,100,0.08))',
+        'radial-gradient(circle at 25% 75%, rgba(180,160,120,0.1), transparent 50%), linear-gradient(45deg, #0c0b0a, #18150e)',
+        'linear-gradient(200deg, rgba(160,140,100,0.16), #0a0a0a 50%, rgba(180,160,120,0.05))',
+        'radial-gradient(circle at 75% 25%, rgba(170,150,110,0.18), transparent 50%), linear-gradient(0deg, #0a0a0a, #100e0c)',
+      ]
+    },
+    { // Okonkwo - electric teal/purple
+      portrait: 'radial-gradient(ellipse at 30% 70%, rgba(100,180,170,0.18) 0%, transparent 50%), radial-gradient(ellipse at 70% 30%, rgba(140,100,180,0.15) 0%, transparent 45%), linear-gradient(160deg, #0a0e0e 0%, #0e1618 40%, #0a0e0e 100%)',
+      works: [
+        'linear-gradient(135deg, rgba(100,180,170,0.14), #0a0a0a 60%, rgba(140,100,180,0.08))',
+        'radial-gradient(circle at 20% 80%, rgba(100,180,170,0.1), transparent 50%), linear-gradient(45deg, #0a0e0e, #0e1618)',
+        'linear-gradient(200deg, rgba(140,100,180,0.15), #0a0a0a 50%, rgba(100,180,170,0.06))',
+        'radial-gradient(circle at 80% 20%, rgba(120,140,175,0.18), transparent 50%), linear-gradient(0deg, #0a0a0a, #0c1010)',
+      ]
+    },
+    { // Okoro - warm rose/ochre
+      portrait: 'radial-gradient(ellipse at 40% 60%, rgba(180,120,100,0.2) 0%, transparent 50%), radial-gradient(ellipse at 60% 40%, rgba(200,170,100,0.12) 0%, transparent 45%), linear-gradient(160deg, #0e0c0a 0%, #1a1210 40%, #0e0c0a 100%)',
+      works: [
+        'linear-gradient(135deg, rgba(180,120,100,0.15), #0a0a0a 60%, rgba(200,170,100,0.08))',
+        'radial-gradient(circle at 30% 70%, rgba(180,120,100,0.1), transparent 50%), linear-gradient(45deg, #0e0c0a, #1a1210)',
+        'linear-gradient(200deg, rgba(200,170,100,0.14), #0a0a0a 50%, rgba(180,120,100,0.05))',
+        'radial-gradient(circle at 70% 30%, rgba(190,145,100,0.18), transparent 50%), linear-gradient(0deg, #0a0a0a, #120e0c)',
+      ]
+    },
+    { // Brandt - cold grey/steel
+      portrait: 'radial-gradient(ellipse at 35% 65%, rgba(140,140,150,0.18) 0%, transparent 50%), radial-gradient(ellipse at 65% 35%, rgba(110,110,130,0.12) 0%, transparent 45%), linear-gradient(160deg, #0b0b0c 0%, #14141a 40%, #0b0b0c 100%)',
+      works: [
+        'linear-gradient(135deg, rgba(140,140,150,0.14), #0a0a0a 60%, rgba(110,110,130,0.08))',
+        'radial-gradient(circle at 25% 75%, rgba(140,140,150,0.1), transparent 50%), linear-gradient(45deg, #0b0b0c, #14141a)',
+        'linear-gradient(200deg, rgba(110,110,130,0.16), #0a0a0a 50%, rgba(140,140,150,0.05))',
+        'radial-gradient(circle at 75% 25%, rgba(125,125,140,0.18), transparent 50%), linear-gradient(0deg, #0a0a0a, #0e0e10)',
+      ]
+    },
+    { // Nakamura - earthy green/clay
+      portrait: 'radial-gradient(ellipse at 30% 70%, rgba(120,150,100,0.18) 0%, transparent 50%), radial-gradient(ellipse at 70% 30%, rgba(170,140,110,0.12) 0%, transparent 45%), linear-gradient(160deg, #0b0c0a 0%, #12160e 40%, #0b0c0a 100%)',
+      works: [
+        'linear-gradient(135deg, rgba(120,150,100,0.14), #0a0a0a 60%, rgba(170,140,110,0.08))',
+        'radial-gradient(circle at 20% 80%, rgba(120,150,100,0.1), transparent 50%), linear-gradient(45deg, #0b0c0a, #12160e)',
+        'linear-gradient(200deg, rgba(170,140,110,0.15), #0a0a0a 50%, rgba(120,150,100,0.06))',
+        'radial-gradient(circle at 80% 20%, rgba(145,145,105,0.18), transparent 50%), linear-gradient(0deg, #0a0a0a, #0e100c)',
+      ]
+    },
+  ];
+
+  var artists = [
+    {
+      name: 'Juan-Miguel Guimar\u00e3es',
+      discipline: 'Mixed Media / Sculpture',
+      location: 'Lisbon / Porto',
+      born: 'b. 1987, Porto',
+      quote: '\u201CThe material remembers what the body forgets. I am merely the intermediary between textile and trauma.\u201D',
+      bio: 'Born in Porto, Juan-Miguel Guimar\u00e3es studied at the Escola Universit\u00e1ria das Artes de Coimbra before an itinerant decade across West Africa and Southeast Asia. His practice emerged from an obsessive collection of discarded textiles \u2014 bolsa cloth, industrial felt, hospital linen \u2014 which he layers, burns, and reconstitutes into monumental wall works that oscillate between painting and sculpture. Guimar\u00e3es treats the surface not as a plane for representation, but as a living archive of touch, labour, and decay. His work has been acquired by the Serralves Foundation, Tate Modern, and the Solomon R. Guggenheim Museum.',
+      exhibitions: [
+        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
+        { name: 'The Skin of Others', venue: 'Serralves Museum, Porto \u2014 2025' },
+        { name: 'Soft Architecture', venue: 'Palais de Tokyo, Paris \u2014 2024' },
+        { name: 'Thread / Threat', venue: 'Venice Biennale \u2014 2024' },
+        { name: 'Material Witness', venue: 'Whitechapel Gallery, London \u2014 2023' },
+      ],
+      works: [
+        { title: 'Untitled (Erosion IV)', year: '2024' },
+        { title: 'Spirit and Teeth', year: '2024' },
+        { title: 'Bolsa Triptych', year: '2023' },
+        { title: 'Grandmother\u2019s Hands', year: '2022' },
+      ]
+    },
+    {
+      name: 'N.E. Rogers',
+      discipline: 'Oil / Aluminium',
+      location: 'Manchester / London',
+      born: 'b. 1992, Manchester',
+      quote: '\u201CI paint what happens when cells forget their purpose. The aluminium makes the painting look back at you.\u201D',
+      bio: 'N.E. Rogers graduated from the Royal College of Art in 2018 and immediately rejected canvas as a substrate. Working exclusively on raw aluminium panels \u2014 industrially polished to a mirror finish \u2014 Rogers applies oil paint in gossamer layers that interact with the reflective surface beneath. The result is painting that changes with the viewer\u2019s position, light conditions, and even body heat radiating near the surface. The Membrane series, now spanning twenty-three works, investigates cellular biology as metaphor: every boundary is permeable, every interior eventually becomes exterior.',
+      exhibitions: [
+        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
+        { name: 'New Contemporaries', venue: 'ICA London \u2014 2025' },
+        { name: 'Permeable Boundaries', venue: 'Manchester Art Gallery \u2014 2024' },
+        { name: 'Bloomberg New Contemporaries', venue: 'South London Gallery \u2014 2023' },
+      ],
+      works: [
+        { title: 'Membrane Study No. 7', year: '2025' },
+        { title: 'Membrane Study No. 4', year: '2024' },
+        { title: 'Osmosis (Red)', year: '2023' },
+        { title: 'Cell Division', year: '2023' },
+      ]
+    },
+    {
+      name: 'Elijah Craigl',
+      discipline: 'Photography / Installation',
+      location: 'Chicago / Berlin',
+      born: 'b. 1985, Chicago',
+      quote: '\u201CThe camera is a weapon of forgetting. I use it to un-document. Every exposure is an erasure.\u201D',
+      bio: 'Elijah Craigl trained as a photojournalist before abandoning documentary ethics entirely. Now based between Chicago and Berlin, Craigl works with large-format film that he deliberately misprocesses \u2014 bleaching, re-exposing, submerging in industrial solvents \u2014 until the photograph loses all indexical relationship to its subject. What remains is the residue of the photographic act itself: light, chemistry, time. His installations often fill entire rooms with floor-to-ceiling prints that bleed into one another, creating environments where looking becomes a form of disorientation.',
+      exhibitions: [
+        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
+        { name: 'Against Documentation', venue: 'MCA Chicago \u2014 2025' },
+        { name: 'Chemical Memory', venue: 'KW Institute, Berlin \u2014 2024' },
+        { name: 'The Weight of Looking', venue: 'Aperture Foundation, NYC \u2014 2023' },
+        { name: 'Undeveloped', venue: 'Paris Photo \u2014 2022' },
+      ],
+      works: [
+        { title: 'The Weight of Looking', year: '2024' },
+        { title: 'Bleach Study #41', year: '2024' },
+        { title: 'Room for Forgetting', year: '2023' },
+        { title: 'Overexposed (Chicago)', year: '2022' },
+      ]
+    },
+    {
+      name: 'Sable Okonkwo',
+      discipline: 'Digital / Generative',
+      location: 'Lagos / London',
+      born: 'b. 1994, Lagos',
+      quote: '\u201CCode is just another medium. The algorithm doesn\u2019t create art \u2014 it reveals the art that was always latent in the data.\u201D',
+      bio: 'Sable Okonkwo holds dual degrees in Computer Science from the University of Lagos and Fine Art from Goldsmiths. Her practice sits at the exact intersection of programming and portraiture: custom neural networks trained on archival photographs from the Nigerian National Museum generate faces that hover between recognition and pure abstraction. Each display renders a unique iteration \u2014 the portrait is never the same twice. Okonkwo\u2019s work asks who gets to be remembered, how archives construct identity, and whether an algorithm can mourn.',
+      exhibitions: [
+        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
+        { name: 'Digital Earth', venue: 'Serpentine Gallery, London \u2014 2025' },
+        { name: 'The Archive Looks Back', venue: 'Lagos Biennial \u2014 2024' },
+        { name: 'Coded Futures', venue: 'Haus der Kunst, Munich \u2014 2024' },
+      ],
+      works: [
+        { title: 'Negative Space (Portrait)', year: '2025' },
+        { title: 'Archive Ghosts I\u2013IV', year: '2024' },
+        { title: 'Who Remembers', year: '2024' },
+        { title: 'Latent Face', year: '2023' },
+      ]
+    },
+    {
+      name: 'Ines Okoro',
+      discipline: 'Pigment on Paper',
+      location: 'S\u00e3o Paulo / Lisbon',
+      born: 'b. 1990, S\u00e3o Paulo',
+      quote: '\u201CI grind every pigment by hand. The colour must pass through the body before it reaches the paper.\u201D',
+      bio: 'Ines Okoro descends from a family of papermakers in Minas Gerais. After studying at the Escola de Belas Artes in Lisbon, she returned to her family\u2019s craft, fabricating her own substrates from cotton, abac\u00e1, and occasionally human hair. Her paintings \u2014 if they can be called that \u2014 consist of hundreds of translucent washes of hand-ground mineral pigment, building forms that emerge from and dissolve back into pure chromatic fields. The Dissolve series, her most ambitious undertaking, is a nine-panel meditation on colour as grief.',
+      exhibitions: [
+        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
+        { name: 'Chromatic Grief', venue: 'Pinacoteca, S\u00e3o Paulo \u2014 2025' },
+        { name: 'Dissolve', venue: 'Museu Berardo, Lisbon \u2014 2024' },
+        { name: 'On Paper', venue: 'Fondation Beyeler, Basel \u2014 2023' },
+      ],
+      works: [
+        { title: 'Dissolve (Triptych I)', year: '2024' },
+        { title: 'Dissolve (Triptych II)', year: '2024' },
+        { title: 'Mineral Study: Ochre', year: '2023' },
+        { title: 'Paper as Skin', year: '2022' },
+      ]
+    },
+    {
+      name: 'Felix Brandt',
+      discipline: 'Video / Performance',
+      location: 'Hamburg / London',
+      born: 'b. 1988, Hamburg',
+      quote: '\u201CDuration is the only honest medium. Everything else is a snapshot pretending to be complete.\u201D',
+      bio: 'Felix Brandt spent five years as a concert pianist before pivoting to time-based media. His video works are exercises in radical patience: single-take recordings of thresholds \u2014 doors closing, tides turning, seasons shifting \u2014 presented as infinite loops where endings perpetually become beginnings. Each piece is accompanied by a soundtrack composed from field recordings made at the filming location, collapsing geography into pure temporal experience. His performances, often lasting eight to twelve hours, test the endurance of both artist and audience.',
+      exhibitions: [
+        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
+        { name: 'The Long Take', venue: 'Hamburger Bahnhof, Berlin \u2014 2025' },
+        { name: 'Threshold', venue: 'Barbican Centre, London \u2014 2024' },
+        { name: 'Slow Violence', venue: 'documenta fifteen \u2014 2022' },
+      ],
+      works: [
+        { title: 'Threshold Condition', year: '2025' },
+        { title: 'Door (12 Cities)', year: '2024' },
+        { title: 'Tide Study', year: '2023' },
+        { title: 'Eight Hours', year: '2022' },
+      ]
+    },
+    {
+      name: 'Yuki Nakamura',
+      discipline: 'Ceramic / Sound',
+      location: 'Kyoto / London',
+      born: 'b. 1991, Kyoto',
+      quote: '\u201CClay and sound are the same material \u2014 they both require you to listen with your hands.\u201D',
+      bio: 'Yuki Nakamura trained in traditional Raku pottery under her grandfather before studying electroacoustic composition at the Royal Academy of Music. Her practice synthesises these two worlds: ceramic vessels designed not as visual objects but as acoustic instruments, resonating chambers that transform ambient sound into something between music and sculpture. Each piece is tuned to a specific harmonic frequency, and exhibitions are orchestrated so that the collective hum of the vessels creates an immersive, site-specific composition that shifts as visitors move through the space.',
+      exhibitions: [
+        { name: 'Meat (or How to Kill Oedipus in Cyberspace)', venue: "AH'C Gallery, London \u2014 2026" },
+        { name: 'Resonance', venue: 'Kyoto Art Centre \u2014 2025' },
+        { name: 'Listening Vessels', venue: 'Camden Arts Centre, London \u2014 2024' },
+        { name: 'Sound & Clay', venue: 'Mori Art Museum, Tokyo \u2014 2023' },
+      ],
+      works: [
+        { title: 'Vessel (A\u266D)', year: '2025' },
+        { title: 'Chamber Music I\u2013III', year: '2024' },
+        { title: 'Raku Song', year: '2023' },
+        { title: 'Silence Pot', year: '2022' },
+      ]
+    },
+  ];
+
+  function open(id) {
+    var artist = artists[id];
+    if (!artist) return;
+    var pal = palettes[id] || palettes[0];
+
+    // Remove any existing overlay clone
+    var old = document.getElementById('artistDetailPage');
+    if (old) old.remove();
+
+    var initials = artist.name.split(' ').map(function(w) { return w.charAt(0); }).join('');
+    var num = String(id + 1).padStart(2, '0');
+    var prevId = (id - 1 + artists.length) % artists.length;
+    var nextId = (id + 1) % artists.length;
+
+    // Build exhibitions
+    var exHTML = '';
+    for (var i = 0; i < artist.exhibitions.length; i++) {
+      var ex = artist.exhibitions[i];
+      exHTML += '<div style="padding:16px 0;border-bottom:1px solid rgba(240,236,226,0.08);display:flex;justify-content:space-between;align-items:baseline;gap:20px;' + (i === 0 ? 'border-top:1px solid rgba(240,236,226,0.08);' : '') + '">' +
+        '<span style="font-family:\'Playfair Display\',Georgia,serif;font-size:15px;font-style:italic;color:#f0ece2">' + ex.name + '</span>' +
+        '<span style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:8px;letter-spacing:2px;color:#444440;text-transform:uppercase;text-align:right;flex-shrink:0">' + ex.venue + '</span>' +
+      '</div>';
+    }
+
+    // Build works
+    var wHTML = '';
+    for (var j = 0; j < artist.works.length; j++) {
+      var w = artist.works[j];
+      var bg = pal.works[j % pal.works.length];
+      wHTML += '<div style="aspect-ratio:1;position:relative;overflow:hidden;background:' + bg + '">' +
+        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;background:linear-gradient(transparent 40%,rgba(10,10,10,0.8));opacity:0;transition:opacity 0.3s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">' +
+          '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:14px;font-style:italic;color:#f0ece2">' + w.title + '</div>' +
+          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:8px;letter-spacing:2px;color:#444440;margin-top:4px">' + w.year + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // Create completely standalone overlay div
+    var el = document.createElement('div');
+    el.id = 'artistDetailPage';
+    el.style.cssText = 'position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:999990!important;background:#0a0a0a!important;overflow-y:auto!important;overflow-x:hidden!important;display:block!important;opacity:1!important;visibility:visible!important;color:#f0ece2!important';
+
+    el.innerHTML =
+      // TOP BAR
+      '<div style="position:sticky;top:0;z-index:10;padding:20px 40px;background:linear-gradient(#0a0a0a 60%,transparent);display:flex;justify-content:space-between;align-items:center">' +
+        '<button onclick="ArtistOverlay.close()" style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#f0ece2;background:rgba(10,10,10,0.9);border:1px solid rgba(240,236,226,0.15);padding:14px 24px;cursor:pointer">' +
+          '\u2190 Back' +
+        '</button>' +
+        '<button onclick="ArtistOverlay.close()" style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#f0ece2;background:rgba(10,10,10,0.9);border:1px solid rgba(240,236,226,0.15);padding:14px 24px;cursor:pointer">' +
+          '\u2715 Close' +
+        '</button>' +
+      '</div>' +
+
+      // HERO SECTION
+      '<div style="display:grid;grid-template-columns:1fr 1fr;min-height:100vh">' +
+        // Portrait
+        '<div style="position:relative;overflow:hidden;min-height:100vh;background:' + pal.portrait + '">' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">' +
+            '<span style="font-family:\'Playfair Display\',Georgia,serif;font-size:min(12vw,180px);font-weight:900;font-style:italic;color:rgba(240,236,226,0.06);letter-spacing:-0.04em;user-select:none">' + initials + '</span>' +
+          '</div>' +
+          '<div style="position:absolute;bottom:30px;left:30px">' +
+            '<span style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:7px;letter-spacing:4px;text-transform:uppercase;color:#444440">' + artist.born + '</span>' +
+          '</div>' +
+        '</div>' +
+        // Info
+        '<div style="display:flex;flex-direction:column;justify-content:flex-end;padding:120px 80px 100px">' +
+          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:11px;letter-spacing:6px;color:#444440;margin-bottom:20px">' + num + ' / 07</div>' +
+          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c5a880;margin-bottom:24px">' + artist.discipline + '</div>' +
+          '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:min(5.5vw,85px);font-weight:900;font-style:italic;color:#f0ece2;line-height:1;margin-bottom:16px">' + artist.name + '</div>' +
+          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:10px;letter-spacing:3px;color:#444440;text-transform:uppercase;margin-bottom:50px">' + artist.location + '</div>' +
+          '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:min(1.6vw,20px);font-style:italic;line-height:1.8;color:rgba(240,236,226,0.45);max-width:420px;padding-left:20px;border-left:2px solid #c5a880">' + artist.quote + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // DIVIDER
+      '<div style="width:100%;height:1px;background:rgba(240,236,226,0.08)"></div>' +
+
+      // BODY
+      '<div style="padding:100px 10vw;display:grid;grid-template-columns:1fr 1fr;gap:100px;max-width:1200px">' +
+        '<div>' +
+          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c5a880;margin-bottom:30px">Biography</div>' +
+          '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:min(1.3vw,17px);font-style:italic;line-height:2;color:rgba(240,236,226,0.6);margin-bottom:60px">' + artist.bio + '</div>' +
+          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#444440;margin-bottom:30px">Selected Exhibitions</div>' +
+          exHTML +
+        '</div>' +
+        '<div>' +
+          '<div style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#c5a880;margin-bottom:30px">Selected Works</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">' + wHTML + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // FOOTER NAV
+      '<div style="display:flex;justify-content:space-between;padding:60px 10vw 100px;border-top:1px solid rgba(240,236,226,0.08)">' +
+        '<button onclick="ArtistOverlay.open(' + prevId + ')" style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:10px;letter-spacing:2px;color:#888880;background:none;border:none;cursor:pointer">\u2190 ' + artists[prevId].name + '</button>' +
+        '<button onclick="ArtistOverlay.open(' + nextId + ')" style="font-family:\'Space Mono\',\'Courier New\',monospace;font-size:10px;letter-spacing:2px;color:#888880;background:none;border:none;cursor:pointer">' + artists[nextId].name + ' \u2192</button>' +
+      '</div>';
+
+    document.body.appendChild(el);
+    document.body.style.overflow = 'hidden';
+    try { if (typeof lenisInstance !== 'undefined' && lenisInstance) lenisInstance.stop(); } catch(e) {}
+  }
+
+  function close() {
+    var el = document.getElementById('artistDetailPage');
+    if (el) el.remove();
+    document.body.style.overflow = '';
+    try { if (typeof lenisInstance !== 'undefined' && lenisInstance) lenisInstance.start(); } catch(e) {}
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') close();
+  });
+
+  return { open: open, close: close };
+})();
+
 
 // ────────────────────────────────
 //  GLOBAL INIT
@@ -2445,7 +3321,6 @@ function initSite() {
 // Boot
 document.addEventListener('DOMContentLoaded', function() {
   Cursor.init();
-
   var hasPreloader = document.getElementById('preloader');
   if (hasPreloader) {
     Preloader.run(function() {
