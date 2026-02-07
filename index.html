@@ -2076,43 +2076,44 @@ img { display: block; max-width: 100%; }
 
   /* ── Hero ── */
   .hero {
-    min-height: 75vh; /* Further reduced to eliminate blank space */
-    padding: 20px 20px 20px; /* Minimal padding */
-    justify-content: flex-start; /* Align to top instead of center */
-    padding-top: 100px; /* Space from top navigation */
+    min-height: auto; /* Remove height constraint - let content determine height */
+    height: auto; /* Natural height based on content */
+    padding: 80px 20px 40px; /* Top padding for nav, moderate bottom */
+    justify-content: flex-start; /* Align to top */
     gap: 0; /* Remove any gap between flex children */
   }
 
   .hero-title {
     font-size: clamp(80px, 25vw, 200px);
-    margin-bottom: 0; /* Remove any bottom margin */
-    line-height: 0.75; /* Tighter line height on mobile */
+    margin-bottom: 0;
+    line-height: 0.75;
   }
   
   .reveal-line {
-    margin: 0; /* Remove any margin from reveal lines */
-    line-height: 0.75; /* Match title line height */
+    margin: 0;
+    line-height: 0.75;
   }
 
   .hero-subtitle {
     font-size: 7px;
     letter-spacing: 4px;
-    margin-top: 16px; /* Tighter - reduced from 20px */
+    margin-top: 16px;
     text-align: center;
     padding: 0 10px;
   }
 
   .hero-year {
     font-size: 11px;
-    margin-top: 8px; /* Tighter - reduced from 10px */
+    margin-top: 8px;
   }
 
   .hero-scroll-indicator {
-    margin-top: 16px; /* Tighter - reduced from 20px */
+    margin-top: 16px;
+    margin-bottom: 0; /* No bottom margin */
   }
   
   .scroll-line {
-    height: 35px; /* Shorter scroll line */
+    height: 35px;
   }
 
   /* ── Marquee ── */
@@ -2478,27 +2479,28 @@ img { display: block; max-width: 100%; }
 /* ── Extra small screens ── */
 @media (max-width: 480px) {
   .hero {
-    min-height: 70vh; /* Very compact for small screens */
-    padding: 20px 20px 15px; /* Minimal padding */
-    padding-top: 80px; /* Less space from top */
+    min-height: auto; /* Natural height */
+    height: auto; /* Let content determine height */
+    padding: 70px 20px 30px; /* Slightly less top padding */
   }
   
   .hero-subtitle {
-    margin-top: 12px; /* Very tight spacing */
-    font-size: 6.5px; /* Slightly smaller to fit better */
+    margin-top: 12px;
+    font-size: 6.5px;
   }
   
   .hero-year {
-    margin-top: 6px; /* Very tight spacing */
+    margin-top: 6px;
     font-size: 10px;
   }
   
   .hero-scroll-indicator {
-    margin-top: 12px; /* Very tight spacing */
+    margin-top: 12px;
+    margin-bottom: 0;
   }
   
   .scroll-line {
-    height: 30px; /* Compact scroll line */
+    height: 30px;
   }
   
   .split-left {
