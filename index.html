@@ -2076,8 +2076,8 @@ img { display: block; max-width: 100%; }
 
   /* ── Hero ── */
   .hero {
-    min-height: 100svh;
-    padding: 20px 20px 60px;
+    min-height: 90vh; /* Reduced from 100svh to prevent excessive blank space */
+    padding: 20px 20px 30px; /* Reduced bottom padding from 60px to 30px */
   }
 
   .hero-title {
@@ -2087,18 +2087,22 @@ img { display: block; max-width: 100%; }
   .hero-subtitle {
     font-size: 7px;
     letter-spacing: 4px;
-    margin-top: 30px;
+    margin-top: 20px; /* Reduced from 30px */
     text-align: center;
     padding: 0 10px;
   }
 
   .hero-year {
     font-size: 11px;
-    margin-top: 14px;
+    margin-top: 10px; /* Reduced from 14px */
   }
 
   .hero-scroll-indicator {
-    margin-top: 30px;
+    margin-top: 20px; /* Reduced from 30px */
+  }
+  
+  .scroll-line {
+    height: 40px; /* Reduced from default 50px for mobile */
   }
 
   /* ── Marquee ── */
@@ -2258,12 +2262,13 @@ img { display: block; max-width: 100%; }
 
   .exhibition-title {
     font-size: clamp(28px, 8vw, 48px);
-    margin-bottom: 24px;
+    margin-bottom: 25px;
   }
 
   .exhibition-body {
     font-size: 10px;
-    line-height: 1.9;
+    line-height: 2;
+    margin-bottom: 30px;
   }
 
   .exhibition-dates {
@@ -2462,6 +2467,27 @@ img { display: block; max-width: 100%; }
 
 /* ── Extra small screens ── */
 @media (max-width: 480px) {
+  .hero {
+    min-height: 85vh; /* Even smaller for tiny screens */
+    padding: 20px 20px 20px; /* Minimal bottom padding */
+  }
+  
+  .hero-subtitle {
+    margin-top: 16px; /* Tighter spacing */
+  }
+  
+  .hero-year {
+    margin-top: 8px; /* Tighter spacing */
+  }
+  
+  .hero-scroll-indicator {
+    margin-top: 16px; /* Tighter spacing */
+  }
+  
+  .scroll-line {
+    height: 35px; /* Shorter scroll line */
+  }
+  
   .split-left {
     padding: 20px 16px;
     min-height: 35vh;
